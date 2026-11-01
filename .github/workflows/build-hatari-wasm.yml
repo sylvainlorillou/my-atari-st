@@ -1,0 +1,63 @@
+name: Build Hatari WebAssembly
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [hatari-wasm]
+    paths:
+      - "hatari-lab.html"
+      - ".github/workflows/build-hatari-wasm.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout MY ATARI ST
+        uses: actions/checkout@v4
+        with:
+          ref: hatari-wasm
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build libsdl2-dev gcc-m68k-atari-mint binutils-m68k-atari-mint
+
+      - name: Install Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 3.1.64
+          actions-cache-folder: emsdk-cache
+
+      - name: Build free EmuTOS ROM
+        run: |
+          git clone --depth 1 https://github.com/hatari/emutos.git /tmp/emutos
+          make -C /tmp/emutos 1024
+          mkdir -p /tmp/hatari-build/files
+          cp /tmp/emutos/etos1024k.img /tmp/hatari-build/files/tos.img
+
+      - name: Build Hatari 2.6.1 for the browser
+        run: |
+          git clone --depth 1 --branch v2.6.1 https://github.com/hatari/hatari.git /tmp/hatari
+          emcmake cmake -S /tmp/hatari -B /tmp/hatari-build -G Ninja -DENABLE_TOOLS=OFF -DENABLE_LIBRETRO=OFF -DENABLE_DSP_EMU=OFF
+          cmake --build /tmp/hatari-build --target hatari --parallel 2
+          mkdir -p hatari
+          cp /tmp/hatari-build/src/hatari.html hatari/hatari.html
+          cp /tmp/hatari-build/src/hatari.js hatari/hatari.js
+          cp /tmp/hatari-build/src/hatari.wasm hatari/hatari.wasm
+          if [ -f /tmp/hatari-build/src/hatari.data ]; then cp /tmp/hatari-build/src/hatari.data hatari/hatari.data; fi
+          ls -lh hatari/
+
+      - name: Commit browser build to the test branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add hatari/
+          if git diff --cached --quiet; then
+            echo "Hatari build is already up to date."
+          else
+            git commit -m "Build Hatari WebAssembly runtime [skip ci]"
+            git push origin HEAD:hatari-wasm
+          fi

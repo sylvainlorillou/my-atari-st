@@ -122,7 +122,7 @@ function emulatorFrame(){return document.getElementById('emuFrame')}
 function emulatorDoc(){try{return emulatorFrame().contentWindow.document}catch(e){return null}}
 function emulatorStatus(t){$('#emuStatus').textContent=t}
 function mountGameInEmulator(g){
- const f=emuFrame();
+ const f=emulatorFrame();
  $('#fakeDesktop').style.display='none';$('#emuHost').classList.add('active');$('#displayScreen').classList.add('emulating');
  try{
   const w=f.contentWindow;

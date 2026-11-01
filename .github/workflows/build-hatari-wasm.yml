@@ -23,7 +23,7 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build libsdl2-dev gcc-m68k-linux-gnu binutils-m68k-linux-gnu
+          sudo apt-get install -y cmake ninja-build gcc-m68k-linux-gnu binutils-m68k-linux-gnu
 
       - name: Install Emscripten
         uses: mymindstorm/setup-emsdk@v14
@@ -35,8 +35,8 @@ jobs:
         run: |
           git clone --depth 1 https://github.com/hatari/emutos.git /tmp/emutos
           make -C /tmp/emutos ELF=1 TOOLCHAIN_PREFIX=m68k-linux-gnu- 1024
-          mkdir -p /tmp/hatari-build/files
-          cp /tmp/emutos/etos1024k.img /tmp/hatari-build/files/tos.img
+          mkdir -p /tmp/hatari-build/files/share/hatari
+          cp /tmp/emutos/etos1024k.img /tmp/hatari-build/files/share/hatari/tos.img
 
       - name: Build Hatari 2.6.1 for the browser
         run: |

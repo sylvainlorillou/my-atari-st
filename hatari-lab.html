@@ -5,7 +5,29 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MY ATARI ST — laboratoire Hatari</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#d8d8d2;color:#252a28;font:14px Arial,sans-serif}.wrap{max-width:1100px;margin:auto;padding:22px}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}.top img{width:190px;max-width:45vw}.tag{font-size:10px;letter-spacing:.12em;color:#526052}.panel{background:#f4f3ed;border:1px solid #b9bcb3;border-radius:10px;padding:16px;margin:12px 0}.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.btn{border:1px solid #9da197;background:#fff;padding:9px 12px;border-radius:5px;font-weight:bold;font-size:11px;cursor:pointer}.primary{background:#244c9b;color:#fff;border-color:#244c9b}#status{font-size:12px;color:#526052;margin-top:8px;min-height:18px}.stage{background:#111;border:9px solid #73766f;border-radius:12px;overflow:hidden;min-height:220px;aspect-ratio:4/3;position:relative}.stage iframe{display:block;width:100%;height:100%;min-height:520px;border:0;background:#000}.hint{font-size:12px;line-height:1.55;color:#59625b}.warning{border-left:4px solid #c38a2c;padding-left:12px}.small{font-size:10px;color:#72796f}.virtual{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:center}.dpad{display:grid;grid-template-columns:repeat(3,54px);grid-template-rows:repeat(2,48px);gap:5px;justify-content:center}.keybtn{border:1px solid #777;background:linear-gradient(#fff,#deded8);border-radius:8px;font-size:17px;font-weight:bold;box-shadow:0 2px 0 #999;touch-action:none;user-select:none;min-width:48px;min-height:44px}.keybtn:active,.keybtn.pressed{background:#244c9b;color:#fff;box-shadow:inset 0 2px 4px #182f60;transform:translateY(1px)}.fire{width:88px;height:70px;border-radius:50%;background:#b52d24;color:#fff;border:3px solid #7e1d18;font-weight:bold;font-size:15px;touch-action:none}.function-keys{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}.function-keys .keybtn{font-size:12px;min-width:42px;min-height:38px}.control-note{font-size:11px;color:#59625b;line-height:1.5}@media(max-width:560px){.virtual{grid-template-columns:1fr 1fr;gap:8px}.dpad{grid-template-columns:repeat(3,42px);grid-template-rows:repeat(2,42px)}.keybtn{min-width:40px;min-height:40px}}
+*{box-sizing:border-box}
+body{margin:0;background:#d8d8d2;color:#252a28;font:14px Arial,sans-serif}
+.wrap{max-width:1100px;margin:auto;padding:22px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}
+.top img{width:190px;max-width:45vw}.tag{font-size:10px;letter-spacing:.12em;color:#526052}
+.panel{background:#f4f3ed;border:1px solid #b9bcb3;border-radius:10px;padding:16px;margin:12px 0}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{border:1px solid #9da197;background:#fff;padding:9px 12px;border-radius:5px;font-weight:bold;font-size:11px;cursor:pointer}
+.primary{background:#244c9b;color:#fff;border-color:#244c9b}
+#status{font-size:12px;color:#526052;margin-top:8px;min-height:18px}
+.stage{background:#111;border:9px solid #73766f;border-radius:12px;overflow:hidden;aspect-ratio:4/3;position:relative;width:100%}
+.stage iframe{display:block;width:100%;height:100%;min-height:520px;border:0;background:#000}
+.hint{font-size:12px;line-height:1.55;color:#59625b}
+.small{font-size:10px;color:#72796f}
+.virtual{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:center}
+.dpad{display:grid;grid-template-columns:repeat(3,54px);grid-template-rows:repeat(2,48px);gap:5px;justify-content:center}
+.keybtn{border:1px solid #777;background:linear-gradient(#fff,#deded8);border-radius:8px;font-size:17px;font-weight:bold;box-shadow:0 2px 0 #999;touch-action:none;user-select:none;min-width:48px;min-height:44px}
+.keybtn:active,.keybtn.pressed{background:#244c9b;color:#fff;box-shadow:inset 0 2px 4px #182f60;transform:translateY(1px)}
+.fire{width:88px;height:70px;border-radius:50%;background:#b52d24;color:#fff;border:3px solid #7e1d18;font-weight:bold;font-size:15px;touch-action:none}
+.function-keys{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.function-keys .keybtn{font-size:12px;min-width:42px;min-height:38px}
+.control-note{font-size:11px;color:#59625b;line-height:1.5}
+@media(max-width:560px){.virtual{grid-template-columns:1fr 1fr;gap:8px}.dpad{grid-template-columns:repeat(3,42px);grid-template-rows:repeat(2,42px)}.keybtn{min-width:40px;min-height:40px}}
 </style>
 </head>
 <body>
@@ -13,7 +35,7 @@
  <header class="top"><img src="logo.svg" alt="MY ATARI ST"><div class="tag">ZONE DE TEST · MOTEUR HATARI 2.6.1</div></header>
  <section class="panel">
   <h2>Prototype d'émulation Hatari</h2>
-  <p class="hint">Cette page est un banc d'essai séparé. Elle ne remplace pas encore l'émulateur de la page principale et ne modifie pas votre bibliothèque de disquettes.</p>
+  <p class="hint">Banc d'essai séparé : il ne remplace pas encore l'émulateur de la page principale et ne modifie pas votre bibliothèque de disquettes.</p>
   <div class="controls">
    <label class="btn">CHOISIR UNE DISQUETTE <input id="disk" type="file" accept=".st,.msa,.dim,.stx,.zip" hidden></label>
    <button class="btn primary" id="insert" disabled>INSÉRER DANS LE LECTEUR A</button>
@@ -23,57 +45,11 @@
   <div id="status">Vérification du moteur Hatari…</div>
  </section>
  <section class="stage" id="stage">
-  <iframe id="hatari" title="Émulateur Hatari — environnement de test" src="hatari/hatari.html"></iframe>
+  <iframe id="hatari" title="Émulateur Hatari" src="hatari/hatari.html"></iframe>
  </section>
  <section class="panel">
-  <h3>Clavier et joystick</h3>
-  <p class="hint"><b>Joystick activé :</b> flèches directionnelles pour les déplacements et <b>Ctrl droit</b> pour le bouton FIRE. Cette configuration correspond au joystick Atari du port 1.</p>
-  <p class="hint"><b>Touches de fonction :</b> sur un clavier Mac, essayer <b>Fn + 1</b> à <b>Fn + 0</b> pour F1 à F10. Selon le réglage macOS, les touches F peuvent aussi être utilisées directement. Cliquer d’abord dans l’image Atari pour lui donner le focus.</p>
-  <h3>Essais à effectuer</h3>
-  <ol class="hint">
-   <li>Vérifier que Hatari démarre sur EmuTOS.</li>
-   <li>Insérer une image de disquette personnelle au lecteur A.</li>
-   <li>Tester le clavier Mac et les touches de fonction.</li>
-   <li>Cliquer dans l'écran pour tester la souris et la capture du pointeur.</li>
-   <li>Tester les flèches et Ctrl droit dans un jeu utilisant le joystick.</li>
-   <li>Tester F1 à F10 (Fn + chiffre sur certains claviers Mac) et F12 pour le menu Hatari.</li>
-  </ol>
-  <p class="hint warning">La capture de souris du navigateur peut nécessiter un clic dans l'écran. Le but du prototype est précisément de mesurer ce comportement avant de concevoir notre propre panneau de commandes.</p>
-  <p class="small">Hatari est distribué sous GPL-2.0-or-later. EmuTOS est également un logiciel libre. Les fichiers de jeu ne sont pas fournis.</p>
- </section>
-</main>
-<script>
-const $=s=>document.querySelector(s),frame=$('#hatari');let selected=null,ready=false;
-function status(s){$('#status').textContent=s}
-function module(){try{return frame.contentWindow.Module||null}catch(e){return null}}
-function check(){const m=module();if(m&&m.calledRun){ready=true;status('Hatari est démarré. Choisissez une image ST/MSA/DIM/STX puis insérez-la dans le lecteur A.');$('#insert').disabled=!selected;return}setTimeout(check,700)}
-frame.addEventListener('load',()=>{status('Chargement du moteur Hatari WebAssembly…');check()});
-$('#disk').addEventListener('change',e=>{selected=e.target.files[0]||null;$('#insert').disabled=!selected;status(selected?'Image prête : '+selected.name+' ('+Math.round(selected.size/1024)+' Ko).':'Aucune image sélectionnée.')});
-$('#insert').onclick=async()=>{if(!selected)return;const m=module();if(!m||!m.FS||!m.ccall){status('Le moteur n’est pas encore prêt.');return}try{const bytes=new Uint8Array(await selected.arrayBuffer()),path='/tmp/my-atari-'+Date.now()+'-'+selected.name.replace(/[^a-zA-Z0-9._-]/g,'_');m.FS.writeFile(path,bytes);const result=m.ccall('Floppy_SetDiskFileName','string',['number','string','string'],[0,path,null]);if(!result){status('Hatari refuse cette image ou ne trouve pas le fichier.');return}const ok=m.ccall('Floppy_InsertDiskIntoDrive','number',['number'],[0]);if(!ok){status('Insertion impossible. Vérifiez le format de l’image.');return}status('Disquette insérée dans le lecteur A : '+selected.name)}catch(err){status('Erreur lors du montage : '+err.message)}};
-$('#reset').onclick=()=>{const m=module();if(m&&m.ccall){m.ccall('Reset_Warm',null,[],[]);status('Reset demandé.')}else status('Moteur non prêt.')};
-$('#full').onclick=()=>{const s=$('#stage');if(s.requestFullscreen)s.requestFullscreen()};
-function sendKey(key,type){
- const w=frame.contentWindow;if(!w)return;
- const map={ArrowUp:[38,'ArrowUp'],ArrowDown:[40,'ArrowDown'],ArrowLeft:[37,'ArrowLeft'],ArrowRight:[39,'ArrowRight'],ControlRight:[17,'ControlRight']};
- const code=map[key]||[({F1:112,F2:113,F3:114,F4:115,F5:116,F6:117,F7:118,F8:119,F9:120,F10:121})[key],key];
- try{
-  const ev=new w.KeyboardEvent(type,{key:key==='ControlRight'?'Control':key,code:key==='ControlRight'?'ControlRight':key,keyCode:code[0],which:code[0],location:key==='ControlRight'?2:0,bubbles:true,cancelable:true});
-  Object.defineProperty(ev,'keyCode',{get:()=>code[0]});Object.defineProperty(ev,'which',{get:()=>code[0]});
-  w.dispatchEvent(ev);w.document.dispatchEvent(ev);
- }catch(e){status('Commande clavier indisponible : '+e.message)}
-}
-document.querySelectorAll('[data-key]').forEach(b=>{
- const key=b.dataset.key;
- const down=e=>{e.preventDefault();if(b.dataset.down==='1')return;b.dataset.down='1';b.classList.add('pressed');sendKey(key,'keydown')};
- const up=e=>{e.preventDefault();if(b.dataset.down!=='1')return;b.dataset.down='0';b.classList.remove('pressed');sendKey(key,'keyup')};
- b.addEventListener('pointerdown',down);['pointerup','pointercancel','pointerleave'].forEach(t=>b.addEventListener(t,up));
- b.addEventListener('contextmenu',e=>e.preventDefault());
-});
-</script>
-</body>
-</html <section class="panel">
   <h3>Commandes virtuelles — clavier Mac</h3>
-  <p class="hint">Utilise ces boutons à la souris ou au doigt. Maintiens une direction pour la conserver ; relâche pour arrêter. Le bouton FIRE et les touches F1 à F10 sont envoyés directement à la fenêtre Hatari.</p>
+  <p class="hint">Utilise ces boutons à la souris ou au doigt. Maintiens une direction pour la conserver ; relâche pour arrêter.</p>
   <div class="virtual">
    <div>
     <div class="dpad" aria-label="Joystick">
@@ -88,40 +64,38 @@ document.querySelectorAll('[data-key]').forEach(b=>{
    </div>
   </div>
   <div class="function-keys" aria-label="Touches de fonction">
-   <button class="keybtn" data-key="F${i+1}">F${i+1}</button><button class="keybtn" data-key="F${i+1}">F${i+1}</button><button class="keybtn" data-key="F${i+1}">F${i+1}</button><button class="keybtn" data-key="F${i+1}">F${i+1}</button><button class="keybtn" data-key="F${i+1}">F${i+1}</button><button class="keybtn" data-key="F${i+1}">F${i+1}</button><button class="keybtn" data-key="F${i+1}">F${i+1}</button><button class="keybtn" data-key="F${i+1}">F${i+1}</button><button class="keybtn" data-key="F${i+1}">F${i+1}</button><button class="keybtn" data-key="F${i+1}">F${i+1}</button>
+   <button class="keybtn" data-key="F1">F1</button><button class="keybtn" data-key="F2">F2</button><button class="keybtn" data-key="F3">F3</button><button class="keybtn" data-key="F4">F4</button><button class="keybtn" data-key="F5">F5</button><button class="keybtn" data-key="F6">F6</button><button class="keybtn" data-key="F7">F7</button><button class="keybtn" data-key="F8">F8</button><button class="keybtn" data-key="F9">F9</button><button class="keybtn" data-key="F10">F10</button>
   </div>
-  <p class="control-note">Clique d'abord une fois dans l'écran Atari si les commandes ne répondent pas. Ces boutons évitent les combinaisons Fn propres aux claviers Mac.</p>
- </section>
- <section class="stage" id="stage">
-  <iframe id="hatari" title="Émulateur Hatari — environnement de test" src="hatari/hatari.html"></iframe>
+  <p class="control-note">Ces boutons évitent les combinaisons Fn propres aux claviers Mac.</p>
  </section>
  <section class="panel">
-  <h3>Clavier et joystick</h3>
-  <p class="hint"><b>Joystick activé :</b> flèches directionnelles pour les déplacements et <b>Ctrl droit</b> pour le bouton FIRE. Cette configuration correspond au joystick Atari du port 1.</p>
-  <p class="hint"><b>Touches de fonction :</b> sur un clavier Mac, essayer <b>Fn + 1</b> à <b>Fn + 0</b> pour F1 à F10. Selon le réglage macOS, les touches F peuvent aussi être utilisées directement. Cliquer d’abord dans l’image Atari pour lui donner le focus.</p>
-  <h3>Essais à effectuer</h3>
-  <ol class="hint">
-   <li>Vérifier que Hatari démarre sur EmuTOS.</li>
-   <li>Insérer une image de disquette personnelle au lecteur A.</li>
-   <li>Tester le clavier Mac et les touches de fonction.</li>
-   <li>Cliquer dans l'écran pour tester la souris et la capture du pointeur.</li>
-   <li>Tester les flèches et Ctrl droit dans un jeu utilisant le joystick.</li>
-   <li>Tester F1 à F10 (Fn + chiffre sur certains claviers Mac) et F12 pour le menu Hatari.</li>
-  </ol>
-  <p class="hint warning">La capture de souris du navigateur peut nécessiter un clic dans l'écran. Le but du prototype est précisément de mesurer ce comportement avant de concevoir notre propre panneau de commandes.</p>
-  <p class="small">Hatari est distribué sous GPL-2.0-or-later. EmuTOS est également un logiciel libre. Les fichiers de jeu ne sont pas fournis.</p>
+  <p class="hint">Pour tester : démarre un jeu depuis la disquette, puis essaie la croix et FIRE. Clique dans l'écran Atari pour lui donner le focus si nécessaire.</p>
+  <p class="small">Hatari est distribué sous GPL-2.0-or-later. EmuTOS est un logiciel libre. Les fichiers de jeu ne sont pas fournis.</p>
  </section>
 </main>
 <script>
-const $=s=>document.querySelector(s),frame=$('#hatari');let selected=null,ready=false;
+const $=s=>document.querySelector(s),frame=$('#hatari');let selected=null;
 function status(s){$('#status').textContent=s}
 function module(){try{return frame.contentWindow.Module||null}catch(e){return null}}
-function check(){const m=module();if(m&&m.calledRun){ready=true;status('Hatari est démarré. Choisissez une image ST/MSA/DIM/STX puis insérez-la dans le lecteur A.');$('#insert').disabled=!selected;return}setTimeout(check,700)}
+function check(){const m=module();if(m&&m.calledRun){status('Hatari est démarré. Choisissez une image ST/MSA/DIM/STX puis insérez-la dans le lecteur A.');$('#insert').disabled=!selected;return}setTimeout(check,700)}
 frame.addEventListener('load',()=>{status('Chargement du moteur Hatari WebAssembly…');check()});
 $('#disk').addEventListener('change',e=>{selected=e.target.files[0]||null;$('#insert').disabled=!selected;status(selected?'Image prête : '+selected.name+' ('+Math.round(selected.size/1024)+' Ko).':'Aucune image sélectionnée.')});
 $('#insert').onclick=async()=>{if(!selected)return;const m=module();if(!m||!m.FS||!m.ccall){status('Le moteur n’est pas encore prêt.');return}try{const bytes=new Uint8Array(await selected.arrayBuffer()),path='/tmp/my-atari-'+Date.now()+'-'+selected.name.replace(/[^a-zA-Z0-9._-]/g,'_');m.FS.writeFile(path,bytes);const result=m.ccall('Floppy_SetDiskFileName','string',['number','string','string'],[0,path,null]);if(!result){status('Hatari refuse cette image ou ne trouve pas le fichier.');return}const ok=m.ccall('Floppy_InsertDiskIntoDrive','number',['number'],[0]);if(!ok){status('Insertion impossible. Vérifiez le format de l’image.');return}status('Disquette insérée dans le lecteur A : '+selected.name)}catch(err){status('Erreur lors du montage : '+err.message)}};
 $('#reset').onclick=()=>{const m=module();if(m&&m.ccall){m.ccall('Reset_Warm',null,[],[]);status('Reset demandé.')}else status('Moteur non prêt.')};
 $('#full').onclick=()=>{const s=$('#stage');if(s.requestFullscreen)s.requestFullscreen()};
+function sendKey(key,type){
+ const w=frame.contentWindow;if(!w)return;
+ const map={ArrowUp:38,ArrowDown:40,ArrowLeft:37,ArrowRight:39,ControlRight:17};
+ const funcs={F1:112,F2:113,F3:114,F4:115,F5:116,F6:117,F7:118,F8:119,F9:120,F10:121};
+ const code=map[key]||funcs[key];
+ try{const ev=new w.KeyboardEvent(type,{key:key==='ControlRight'?'Control':key,code:key==='ControlRight'?'ControlRight':key,keyCode:code,which:code,location:key==='ControlRight'?2:0,bubbles:true,cancelable:true});Object.defineProperty(ev,'keyCode',{get:()=>code});Object.defineProperty(ev,'which',{get:()=>code});w.document.dispatchEvent(ev)}catch(e){status('Commande clavier indisponible : '+e.message)}
+}
+document.querySelectorAll('[data-key]').forEach(b=>{
+ const key=b.dataset.key;
+ const down=e=>{e.preventDefault();if(b.dataset.down==='1')return;b.dataset.down='1';b.classList.add('pressed');sendKey(key,'keydown')};
+ const up=e=>{e.preventDefault();if(b.dataset.down!=='1')return;b.dataset.down='0';b.classList.remove('pressed');sendKey(key,'keyup')};
+ b.addEventListener('pointerdown',down);['pointerup','pointercancel','pointerleave'].forEach(t=>b.addEventListener(t,up));b.addEventListener('contextmenu',e=>e.preventDefault());
+});
 </script>
 </body>
 </html>

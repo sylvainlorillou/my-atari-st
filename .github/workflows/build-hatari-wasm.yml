@@ -31,12 +31,18 @@ jobs:
           version: 3.1.64
           actions-cache-folder: emsdk-cache
 
-      - name: Build free EmuTOS ROM
+      - name: Download prebuilt free EmuTOS ROM
         run: |
-          git clone --depth 1 https://github.com/hatari/emutos.git /tmp/emutos
-          make -C /tmp/emutos ELF=1 TOOLCHAIN_PREFIX=m68k-linux-gnu- 1024
-          mkdir -p /tmp/hatari-build/files
-          cp /tmp/emutos/etos1024k.img /tmp/hatari-build/files/tos.img
+          set -euo pipefail
+          ROM_URL="https://sourceforge.net/projects/emutos/files/snapshots/20260923-054535-02c2db75/emutos-1024k-20260923-054535-02c2db75.zip/download"
+          curl -L --fail --retry 3 "$ROM_URL" -o /tmp/emutos-1024k.zip
+          echo "cc2434b8e9955a9adf8a6903f6f6f24390337bbcd3418de61b99cf5f6a98761a  /tmp/emutos-1024k.zip" | sha256sum -c -
+          mkdir -p /tmp/emutos /tmp/hatari-build/files
+          unzip -q /tmp/emutos-1024k.zip -d /tmp/emutos
+          ROM_FILE="$(find /tmp/emutos -type f -iname '*.img' | head -n 1)"
+          test -n "$ROM_FILE"
+          cp "$ROM_FILE" /tmp/hatari-build/files/tos.img
+          test "$(stat -c%s /tmp/hatari-build/files/tos.img)" -ge 1048576
 
       - name: Build Hatari 2.6.1 for the browser
         run: |

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MY ATARI ST — laboratoire Hatari</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#d8d8d2;color:#252a28;font:14px Arial,sans-serif}.wrap{max-width:1100px;margin:auto;padding:22px}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}.top img{width:190px;max-width:45vw}.tag{font-size:10px;letter-spacing:.12em;color:#526052}.panel{background:#f4f3ed;border:1px solid #b9bcb3;border-radius:10px;padding:16px;margin:12px 0}.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.btn{border:1px solid #9da197;background:#fff;padding:9px 12px;border-radius:5px;font-weight:bold;font-size:11px;cursor:pointer}.primary{background:#244c9b;color:#fff;border-color:#244c9b}#status{font-size:12px;color:#526052;margin-top:8px;min-height:18px}.stage{background:#111;border:9px solid #73766f;border-radius:12px;overflow:hidden;min-height:220px;aspect-ratio:4/3;position:relative}.stage iframe{display:block;width:100%;height:100%;min-height:520px;border:0;background:#000}.hint{font-size:12px;line-height:1.55;color:#59625b}.warning{border-left:4px solid #c38a2c;padding-left:12px}.small{font-size:10px;color:#72796f}
+</style>
+</head>
+<body>
+<main class="wrap">
+ <header class="top"><img src="logo.svg" alt="MY ATARI ST"><div class="tag">ZONE DE TEST · MOTEUR HATARI 2.6.1</div></header>
+ <section class="panel">
+  <h2>Prototype d'émulation Hatari</h2>
+  <p class="hint">Cette page est un banc d'essai séparé. Elle ne remplace pas encore l'émulateur de la page principale et ne modifie pas votre bibliothèque de disquettes.</p>
+  <div class="controls">
+   <label class="btn">CHOISIR UNE DISQUETTE <input id="disk" type="file" accept=".st,.msa,.dim,.stx,.zip" hidden></label>
+   <button class="btn primary" id="insert" disabled>INSÉRER DANS LE LECTEUR A</button>
+   <button class="btn" id="reset">RESET</button>
+   <button class="btn" id="full">PLEIN ÉCRAN</button>
+  </div>
+  <div id="status">Vérification du moteur Hatari…</div>
+ </section>
+ <section class="stage" id="stage">
+  <iframe id="hatari" title="Émulateur Hatari — environnement de test" src="hatari/hatari.html"></iframe>
+ </section>
+ <section class="panel">
+  <h3>Essais à effectuer</h3>
+  <ol class="hint">
+   <li>Vérifier que Hatari démarre sur EmuTOS.</li>
+   <li>Insérer une image de disquette personnelle au lecteur A.</li>
+   <li>Tester le clavier Mac et les touches de fonction.</li>
+   <li>Cliquer dans l'écran pour tester la souris et la capture du pointeur.</li>
+   <li>Ouvrir le menu Hatari avec F12 et vérifier les options joystick.</li>
+  </ol>
+  <p class="hint warning">La capture de souris du navigateur peut nécessiter un clic dans l'écran. Le but du prototype est précisément de mesurer ce comportement avant de concevoir notre propre panneau de commandes.</p>
+  <p class="small">Hatari est distribué sous GPL-2.0-or-later. EmuTOS est également un logiciel libre. Les fichiers de jeu ne sont pas fournis.</p>
+ </section>
+</main>
+<script>
+const $=s=>document.querySelector(s),frame=$('#hatari');let selected=null,ready=false;
+function status(s){$('#status').textContent=s}
+function module(){try{return frame.contentWindow.Module||null}catch(e){return null}}
+function check(){const m=module();if(m&&m.calledRun){ready=true;status('Hatari est démarré. Choisissez une image ST/MSA/DIM/STX puis insérez-la dans le lecteur A.');$('#insert').disabled=!selected;return}setTimeout(check,700)}
+frame.addEventListener('load',()=>{status('Chargement du moteur Hatari WebAssembly…');check()});
+$('#disk').addEventListener('change',e=>{selected=e.target.files[0]||null;$('#insert').disabled=!selected;status(selected?'Image prête : '+selected.name+' ('+Math.round(selected.size/1024)+' Ko).':'Aucune image sélectionnée.')});
+$('#insert').onclick=async()=>{if(!selected)return;const m=module();if(!m||!m.FS||!m.ccall){status('Le moteur n’est pas encore prêt.');return}try{const bytes=new Uint8Array(await selected.arrayBuffer()),path='/tmp/my-atari-'+Date.now()+'-'+selected.name.replace(/[^a-zA-Z0-9._-]/g,'_');m.FS.writeFile(path,bytes);const result=m.ccall('Floppy_SetDiskFileName','string',['number','string','string'],[0,path,null]);if(result){status('Hatari refuse cette image : '+result);return}const ok=m.ccall('Floppy_InsertDiskIntoDrive','number',['number'],[0]);if(!ok){status('Insertion impossible. Vérifiez le format de l’image.');return}status('Disquette insérée dans le lecteur A : '+selected.name)}catch(err){status('Erreur lors du montage : '+err.message)}};
+$('#reset').onclick=()=>{const m=module();if(m&&m.ccall){m.ccall('Reset_Warm',null,[],[]);status('Reset demandé.')}else status('Moteur non prêt.')};
+$('#full').onclick=()=>{const s=$('#stage');if(s.requestFullscreen)s.requestFullscreen()};
+</script>
+</body>
+</html>

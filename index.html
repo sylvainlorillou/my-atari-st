@@ -1,20 +1,107 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MY ATARI ST</title><style>
-*{box-sizing:border-box}body{margin:0;background:#d9d9d2;color:#252a28;font:14px Arial,sans-serif}.app{max-width:1400px;margin:auto;padding:18px 26px}header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.logo{width:215px;max-width:45vw}.btn{border:1px solid #969a94;background:#f5f4ed;padding:9px 13px;border-radius:5px;font-size:11px;font-weight:bold;cursor:pointer}.primary{background:#244c9b;color:white;border-color:#244c9b}.machine{background:linear-gradient(145deg,#d2d2c9,#bcbeb6);border:1px solid #a3a69f;border-radius:15px;padding:14px;box-shadow:0 12px 28px #3332}.monitor{width:min(700px,90%);margin:auto;background:#dcdcd3;border:2px solid #999e98;border-radius:20px 20px 12px 12px;padding:13px 18px 7px}.bezel{background:#111;border:6px solid #737a75;border-radius:8px;padding:5px}.screen{width:100%;aspect-ratio:340/200;background:#00b900;position:relative;overflow:hidden;font:8px 'Courier New';color:#111}.menu{height:16px;background:#eee;display:flex;gap:12px;align-items:center;padding:0 8px;border-bottom:1px solid #222}.icons{position:absolute;top:27px;left:10px;display:grid;gap:8px}.icons span{width:40px;text-align:center;font-size:7px}.icons b{display:block;background:#eee;border:1px solid #222;width:20px;height:18px;margin:auto auto 2px;font-size:13px}.gem{position:absolute;left:50%;top:51%;transform:translate(-50%,-50%);width:46%;background:#eee;border:2px solid #222;box-shadow:3px 3px #0006;text-align:center;padding:8px 6px;font-size:8px}.gem strong{display:block;margin-bottom:5px;font-size:9px}.gem button{font:8px 'Courier New';margin-top:4px}.cursor{position:absolute;right:18%;bottom:15%}.monitor-label{text-align:center;padding-top:6px;color:#344d9a;font-weight:bold;font-size:10px;letter-spacing:.1em}.monitor-label small{color:#606761;font-weight:normal}.led{float:right;color:#18a83c}.keyboard{display:block;width:min(1080px,100%);height:auto;margin:4px auto 0;filter:drop-shadow(0 5px 4px #0002)}.caption{text-align:center;font-size:9px;color:#68716b;letter-spacing:.15em;margin-top:2px}.head{display:flex;justify-content:space-between;align-items:end;margin:21px 2px 10px}.head h2{font-size:14px;letter-spacing:.14em;margin:0}.head p{font-size:11px;color:#68716b;margin:4px 0}.shelf{background:linear-gradient(#9d7a52,#76583a);border:1px solid #654b33;border-radius:8px;padding:15px;box-shadow:inset 0 4px 6px #fff2,0 8px 16px #30261c35}.row{display:flex;align-items:stretch;gap:0;overflow-x:auto;min-height:190px;padding:5px;scrollbar-color:#c8b18d #76583a}.divider{flex:0 0 25px;display:flex;align-items:center;justify-content:center;margin:0 6px;background:linear-gradient(90deg,#d8d1b7,#bdb49b);border:1px solid #8d846e;color:#4a493f;font-size:10px;font-weight:bold;writing-mode:vertical-rl;transform:rotate(180deg)}.disk{flex:0 0 105px;height:172px;margin:0 3px;border-radius:5px 5px 2px 2px;background:linear-gradient(90deg,#d9d9d1,#f2f1e9 12%,#d7d7cf 90%,#a7aaa2);border:1px solid #92968e;box-shadow:3px 3px 5px #2e241b65;cursor:pointer;transition:.2s;overflow:hidden}.disk:hover,.disk.selected{transform:translateY(-12px) rotate(-1deg);box-shadow:5px 12px 12px #2e241b75;z-index:2}.art{height:112px;margin:6px;background:#d2d2c9;border:1px solid #aeb0a7;display:grid;place-items:center;overflow:hidden}.art img{width:100%;height:100%;object-fit:cover}.art b{font-size:27px;color:#59615c}.disk h3{font-size:10px;text-align:center;margin:0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.disk p{font-size:8px;text-align:center;color:#68716b;margin:3px}.stripe{height:11px;background:#244c9b;margin-top:6px}.empty{padding:28px;text-align:center;color:#626b65;background:#f4f3ed;min-width:100%;border-radius:6px}.info{margin-top:12px;background:#f3f2eb;border:1px solid #c2c4bb;border-radius:7px;padding:12px;display:flex;justify-content:space-between;align-items:center;gap:10px}.info h3{margin:0 0 3px;font-size:13px}.info p{margin:0;color:#68716b;font-size:10px}footer{display:flex;justify-content:space-between;color:#818780;font-size:9px;letter-spacing:.13em;margin-top:18px}dialog{border:1px solid #aeb0a7;border-radius:10px;padding:20px;width:min(430px,calc(100% - 24px));background:#f5f4ed}dialog::backdrop{background:#101612b8}.field{display:block;font-size:11px;color:#68716b;margin:12px 0}.field input{display:block;width:100%;margin-top:5px;padding:9px;border:1px solid #bfc1b8;border-radius:5px}@media(max-width:650px){.app{padding:12px}.logo{width:155px}.machine{padding:8px}.monitor{width:98%;padding:9px}.disk{flex-basis:90px;height:155px}.art{height:95px}.head{align-items:start;flex-direction:column;gap:8px}}
-</style></head><body><div class="app"><header><img class="logo" src="logo.svg" alt="ATARI ST"><button class="btn primary" id="add">＋ AJOUTER UNE DISQUETTE</button></header>
-<section class="machine"><div class="monitor"><div class="bezel"><div class="screen"><div class="menu"><b>MY ATARI</b><span>Fichier</span><span>Disque</span><span>Options</span></div><div class="icons"><span><b>▤</b>Disquette A</span><span><b>▧</b>Disque dur</span><span><b>▣</b>Corbeille</span></div><div class="gem"><strong>MY ATARI ST</strong>Bienvenue sur votre 1040 STE<br>Choisissez un jeu dans votre collection<br><button id="screenOk">OK</button></div><div class="cursor">◢</div></div></div><div class="monitor-label">◢ ATARI <small>SC1224 COLOUR MONITOR</small><span class="led">●</span></div></div><img class="keyboard" src="keyboard.svg" alt="Clavier Atari ST"><div class="caption">ATARI 1040 STE · CLAVIER ORIGINAL · ÉCRAN 340 × 200</div></section>
-<div class="head"><div><h2>COLLECTION DE DISQUETTES</h2><p id="count">Vos jeux rangés comme dans votre collection d'origine</p></div><button class="btn" id="sort">TRIER A–Z</button></div><section class="shelf"><div class="row" id="shelf"></div></section><div class="info" id="info" hidden><div><h3 id="name"></h3><p id="meta"></p></div><div><a class="btn" id="lookup" target="_blank" rel="noopener">RECHERCHER SUR ATARIMANIA ↗</a><button class="btn primary" id="play">JOUER</button></div></div><footer><span>MY ATARI ST · 1985 — FOREVER</span><span>INTERFACE 0.3 · 340 × 200</span></footer></div>
-<dialog id="dlg"><h3>Ajouter une disquette</h3><p>Le nom du fichier sert à rechercher le jeu dans la base Atarimania.</p><label class="field">Nom du jeu<input id="title" placeholder="Nom du jeu"></label><label class="field">Image disque<input id="file" type="file" accept=".st,.msa,.stx,.dim,.ipf,.zip"></label><label class="field">URL d'image / jaquette (facultatif)<input id="art" placeholder="Adresse d'une image"></label><div style="display:flex;justify-content:flex-end;gap:8px"><button class="btn" id="cancel">Annuler</button><button class="btn primary" id="save">Ajouter</button></div></dialog>
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MY ATARI ST</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#d8d8d2;color:#252a28;font:14px Arial,sans-serif}
+.app{max-width:1400px;margin:auto;padding:18px 26px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.logo{width:215px;max-width:45vw}
+.btn{border:1px solid #969a94;background:#f5f4ed;padding:9px 13px;border-radius:5px;font-size:11px;font-weight:bold;cursor:pointer}
+.primary{background:#244c9b;color:white;border-color:#244c9b}
+.machine{background:linear-gradient(145deg,#d4d4cc,#b9bbb4);border:1px solid #a3a69f;border-radius:20px;padding:22px 18px 12px;box-shadow:0 12px 28px #3333}
+.monitor{width:min(760px,96%);margin:auto;background:linear-gradient(145deg,#efeee7 0%,#d8d8d0 55%,#c5c6bf 100%);border:1px solid #a9aaa3;border-radius:30px 30px 25px 25px;padding:22px 30px 13px;box-shadow:inset 2px 3px 5px #fff9,inset -3px -5px 9px #7773,0 7px 12px #3333}
+.bezel{background:linear-gradient(145deg,#171918,#303331 55%,#111);border:7px solid #777b75;border-radius:19px 19px 16px 16px;padding:7px;box-shadow:inset 0 0 0 2px #080909,0 2px 4px #5558}
+.screen{width:100%;aspect-ratio:340/200;background:#078f08;position:relative;overflow:hidden;border-radius:11px 11px 15px 15px;box-shadow:inset 0 0 22px #0008;font:8px 'Courier New',monospace;color:#111}
+.screen:after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,#fff2,transparent 27%,transparent 75%,#0001);pointer-events:none}
+.menu{height:16px;background:#e7e7df;display:flex;gap:13px;align-items:center;padding:0 8px;border-bottom:1px solid #222}
+.icons{position:absolute;top:27px;left:10px;display:grid;gap:8px}
+.icons span{width:40px;text-align:center;font-size:7px;color:#050505;text-shadow:0 1px #fff}
+.icons b{display:block;background:#e9e9e3;border:1px solid #222;width:20px;height:18px;margin:auto auto 2px;font-size:13px}
+.gem{position:absolute;left:50%;top:51%;transform:translate(-50%,-50%);width:46%;background:#e9e9e3;border:2px solid #222;box-shadow:3px 3px #0006;text-align:center;padding:8px 6px;font-size:8px}
+.gem strong{display:block;margin-bottom:5px;font-size:9px}
+.gem button{font:8px 'Courier New';margin-top:4px}
+.cursor{position:absolute;right:18%;bottom:15%;color:#080808}
+.monitor-label{display:flex;align-items:center;justify-content:center;gap:10px;padding-top:12px;color:#244c9b;font-weight:bold;font-size:15px;letter-spacing:.02em}
+.monitor-label small{color:#74766f;font-size:8px;font-weight:normal;letter-spacing:.1em;margin-left:4px}
+.monitor-label .led{margin-left:auto;margin-right:8px;color:#4aa43c;font-size:8px}
+.keyboard{display:block;width:min(1080px,100%);height:auto;margin:10px auto 0;filter:drop-shadow(0 5px 4px #0002)}
+.caption{text-align:center;font-size:9px;color:#68716b;letter-spacing:.15em;margin-top:4px}
+.head{display:flex;justify-content:space-between;align-items:end;margin:22px 2px 10px}
+.head h2{font-size:14px;letter-spacing:.14em;margin:0}
+.head p{font-size:11px;color:#68716b;margin:4px 0}
+.shelf{background:linear-gradient(#9d7a52,#76583a);border:1px solid #654b33;border-radius:8px;padding:17px 14px 13px;box-shadow:inset 0 4px 6px #fff2,0 8px 16px #30261c35}
+.row{display:flex;align-items:flex-end;gap:13px;overflow-x:auto;min-height:185px;padding:8px 8px 13px;scrollbar-color:#c8b18d #76583a}
+.divider{flex:0 0 22px;height:150px;display:flex;align-items:center;justify-content:center;margin:0 2px 0 4px;background:linear-gradient(90deg,#d8d1b7,#bdb49b);border:1px solid #8d846e;color:#4a493f;font-size:10px;font-weight:bold;writing-mode:vertical-rl;transform:rotate(180deg)}
+.disk{position:relative;flex:0 0 116px;height:154px;border-radius:7px 7px 5px 5px;background:linear-gradient(110deg,#123b83 0%,#2057b0 16%,#17468f 80%,#103878 100%);border:1px solid #0d3475;box-shadow:3px 4px 6px #21180f80;cursor:pointer;transition:transform .18s,box-shadow .18s;overflow:hidden}
+.disk:before{content:"";position:absolute;left:13px;right:13px;top:9px;height:17px;background:linear-gradient(#c9cbc8,#777e7d);border:1px solid #0b3471;border-radius:2px}
+.disk:after{content:"";position:absolute;left:50%;top:10px;transform:translateX(-50%);width:29px;height:15px;background:#17468f;border-left:2px solid #777e7d;border-right:2px solid #777e7d}
+.disk:hover,.disk.selected{transform:translateY(-10px) rotate(-1deg);box-shadow:5px 12px 12px #21180f99;z-index:2}
+.label{position:absolute;left:12px;right:12px;top:42px;min-height:72px;background:linear-gradient(#fff,#ecece7);border:1px solid #c8cbc9;border-radius:2px;padding:8px 5px 5px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;box-shadow:0 1px 2px #0004}
+.label:before{content:"";position:absolute;top:5px;left:5px;right:5px;height:2px;background:#d5d6d2}
+.label strong{font-size:10px;line-height:1.25;color:#222;overflow-wrap:anywhere;max-height:39px;overflow:hidden}
+.label small{font-size:7px;color:#666;margin-top:5px;letter-spacing:.08em}
+.disk .hub{position:absolute;bottom:9px;left:50%;transform:translateX(-50%);width:13px;height:13px;border:2px solid #0e3471;border-radius:50%;box-shadow:inset 0 0 0 2px #3d70bc}
+.empty{padding:28px;text-align:center;color:#626b65;background:#f4f3ed;min-width:100%;border-radius:6px}
+.info{margin-top:12px;background:#f3f2eb;border:1px solid #c2c4bb;border-radius:7px;padding:12px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.info h3{margin:0 0 3px;font-size:13px}.info p{margin:0;color:#68716b;font-size:10px}
+footer{display:flex;justify-content:space-between;color:#818780;font-size:9px;letter-spacing:.13em;margin-top:18px}
+dialog{border:1px solid #aeb0a7;border-radius:10px;padding:20px;width:min(430px,calc(100% - 24px));background:#f5f4ed}
+dialog::backdrop{background:#101612b8}
+.field{display:block;font-size:11px;color:#68716b;margin:12px 0}
+.field input{display:block;width:100%;margin-top:5px;padding:9px;border:1px solid #bfc1b8;border-radius:5px}
+@media(max-width:650px){.app{padding:12px}.logo{width:155px}.machine{padding:12px 7px}.monitor{width:99%;padding:13px 13px 10px;border-radius:22px}.bezel{border-width:5px;padding:5px}.disk{flex-basis:102px;height:143px}.label{left:9px;right:9px;top:40px;min-height:67px}.head{align-items:start;flex-direction:column;gap:8px}}
+</style></head>
+<body><div class="app">
+<header><img class="logo" src="logo.svg" alt="ATARI ST"><button class="btn primary" id="add">＋ AJOUTER UNE DISQUETTE</button></header>
+<section class="machine">
+ <div class="monitor">
+  <div class="bezel"><div class="screen">
+   <div class="menu"><b>MY ATARI</b><span>Fichier</span><span>Disque</span><span>Options</span></div>
+   <div class="icons"><span><b>▤</b>Disquette A</span><span><b>▧</b>Disque dur</span><span><b>▣</b>Corbeille</span></div>
+   <div class="gem"><strong>MY ATARI ST</strong>Bienvenue sur votre 1040 STE<br>Choisissez une disquette dans votre collection<br><button id="screenOk">OK</button></div>
+   <div class="cursor">◢</div>
+  </div></div>
+  <div class="monitor-label">◢ ATARI <small>COLOUR MONITOR</small><span class="led">●</span></div>
+ </div>
+ <img class="keyboard" src="keyboard.svg" alt="Clavier Atari ST">
+ <div class="caption">ATARI 1040 STE · CLAVIER ORIGINAL · ÉCRAN 340 × 200</div>
+</section>
+<div class="head"><div><h2>COLLECTION DE DISQUETTES</h2><p id="count">Vos jeux rangés comme dans votre collection d'origine</p></div><button class="btn" id="sort">TRIER A–Z</button></div>
+<section class="shelf"><div class="row" id="shelf"></div></section>
+<div class="info" id="info" hidden><div><h3 id="name"></h3><p id="meta"></p></div><button class="btn primary" id="play">JOUER</button></div>
+<footer><span>MY ATARI ST · 1985 — FOREVER</span><span>INTERFACE 0.4 · 340 × 200</span></footer></div>
+<dialog id="dlg"><h3>Ajouter une disquette</h3><p>Importez un fichier image de votre disquette Atari ST/STE.</p>
+<label class="field">Nom du jeu<input id="title" placeholder="Nom du jeu"></label>
+<label class="field">Image disque<input id="file" type="file" accept=".st,.msa,.stx,.dim,.ipf,.zip"></label>
+<div style="display:flex;justify-content:flex-end;gap:8px"><button class="btn" id="cancel">Annuler</button><button class="btn primary" id="save">Ajouter</button></div></dialog>
 <script>
 const $=s=>document.querySelector(s),DB='myAtariShelf',STORE='disks';let games=[],chosen=null,az=true;
 function db(){return new Promise((ok,no)=>{let r=indexedDB.open(DB,1);r.onupgradeneeded=()=>r.result.createObjectStore(STORE,{keyPath:'id'});r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)})}
 async function all(){let d=await db();return new Promise((ok,no)=>{let r=d.transaction(STORE).objectStore(STORE).getAll();r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)})}
 async function write(g){let d=await db();return new Promise((ok,no)=>{let r=d.transaction(STORE,'readwrite').objectStore(STORE).put(g);r.onsuccess=ok;r.onerror=()=>no(r.error)})}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function render(){games.sort((a,b)=>az?a.name.localeCompare(b.name):b.added-a.added);$('#count').textContent=games.length+' disquette(s) dans votre collection';let out='',last='';for(const g of games){let l=(g.name[0]||'#').toUpperCase();if(az&&l!==last){out+='<div class="divider">'+esc(l)+'</div>';last=l}out+='<article class="disk '+(chosen===g.id?'selected':'')+'" data-id="'+g.id+'"><div class="art">'+(g.art?'<img src="'+esc(g.art)+'">':'<b>💾</b>')+'</div><h3>'+esc(g.name)+'</h3><p>'+esc(g.ext.toUpperCase())+'</p><div class="stripe"></div></article>'}if(!games.length)out='<div class="empty">💾<br><b>Votre étagère est vide</b><p>Ajoutez vos premières disquettes Atari.</p><button class="btn primary" id="emptyAdd">＋ IMPORTER</button></div>';$('#shelf').innerHTML=out;document.querySelectorAll('[data-id]').forEach(el=>el.onclick=()=>select(el.dataset.id));let e=$('#emptyAdd');if(e)e.onclick=openDlg}
-function select(id){chosen=id;let g=games.find(x=>x.id===id);$('#info').hidden=false;$('#name').textContent=g.name;$('#meta').textContent=g.fileName+' · '+Math.round(g.size/1024)+' Ko';$('#lookup').href='https://www.google.com/search?q='+encodeURIComponent('site:atarimania.com/games/atari-st-games '+g.name);$('#play').onclick=()=>alert('Le moteur d’émulation sera raccordé à ce bouton dans la prochaine étape.');render()}
+function render(){
+ games.sort((a,b)=>az?a.name.localeCompare(b.name):b.added-a.added);
+ $('#count').textContent=games.length+' disquette(s) dans votre collection';
+ let out='',last='';
+ for(const g of games){let l=(g.name[0]||'#').toUpperCase();if(az&&l!==last){out+='<div class="divider">'+esc(l)+'</div>';last=l}
+ out+='<article class="disk '+(chosen===g.id?'selected':'')+'" data-id="'+g.id+'"><div class="label"><strong>'+esc(g.name)+'</strong><small>ATARI ST · 3½"</small></div><div class="hub"></div></article>'}
+ if(!games.length)out='<div class="empty">💾<br><b>Votre étagère est vide</b><p>Ajoutez vos premières disquettes Atari.</p><button class="btn primary" id="emptyAdd">＋ IMPORTER</button></div>';
+ $('#shelf').innerHTML=out;
+ document.querySelectorAll('[data-id]').forEach(el=>el.onclick=()=>select(el.dataset.id));
+ let e=$('#emptyAdd');if(e)e.onclick=openDlg;
+}
+function select(id){chosen=id;let g=games.find(x=>x.id===id);$('#info').hidden=false;$('#name').textContent=g.name;$('#meta').textContent=g.fileName+' · '+Math.round(g.size/1024)+' Ko';$('#play').onclick=()=>alert('Le moteur d’émulation sera raccordé à cette interface dans la prochaine étape.');render()}
 function openDlg(){$('#dlg').showModal()}
-$('#add').onclick=openDlg;$('#cancel').onclick=()=>$('#dlg').close();$('#screenOk').onclick=()=>document.querySelector('.head').scrollIntoView({behavior:'smooth'});$('#sort').onclick=()=>{az=!az;$('#sort').textContent=az?'TRIER A–Z':'TRIER RÉCENTS';render()};
+$('#add').onclick=openDlg;$('#cancel').onclick=()=>$('#dlg').close();
+$('#screenOk').onclick=()=>document.querySelector('.head').scrollIntoView({behavior:'smooth'});
+$('#sort').onclick=()=>{az=!az;$('#sort').textContent=az?'TRIER A–Z':'TRIER RÉCENTS';render()};
 $('#file').onchange=e=>{let f=e.target.files[0];if(f&&!$('#title').value)$('#title').value=f.name.replace(/\.[^.]+$/,'').replace(/[._-]+/g,' ')};
-$('#save').onclick=async()=>{let f=$('#file').files[0],n=$('#title').value.trim()||(f&&f.name.replace(/\.[^.]+$/,''));if(!f){alert('Sélectionnez une image disque.');return}if(f.size>25*1024*1024){alert('25 Mo maximum pour ce prototype.');return}let g={id:crypto.randomUUID(),name:n,fileName:f.name,size:f.size,ext:f.name.split('.').pop(),blob:f,art:$('#art').value.trim(),added:Date.now()};await write(g);games=await all();chosen=g.id;$('#dlg').close();$('#title').value=$('#file').value=$('#art').value='';render();select(g.id)};
+$('#save').onclick=async()=>{let f=$('#file').files[0],n=$('#title').value.trim()||(f&&f.name.replace(/\.[^.]+$/,''));if(!f){alert('Sélectionnez une image disque.');return}if(f.size>25*1024*1024){alert('25 Mo maximum pour ce prototype.');return}
+ let g={id:crypto.randomUUID(),name:n,fileName:f.name,size:f.size,ext:f.name.split('.').pop(),blob:f,added:Date.now()};
+ await write(g);games=await all();chosen=g.id;$('#dlg').close();$('#title').value='';$('#file').value='';render();select(g.id)};
 all().then(x=>{games=x;render()}).catch(()=>$('#shelf').innerHTML='<div class="empty">IndexedDB indisponible dans ce navigateur.</div>');
 </script></body></html>

@@ -117,17 +117,17 @@ function render(){
  document.querySelectorAll('[data-id]').forEach(el=>el.onclick=()=>select(el.dataset.id));
  let e=$('#emptyAdd');if(e)e.onclick=openDlg;
 }
-let emuReady=false,emuJoy=false,emuSound=true;
+let emuReady=false,emuJoy=false,emuSound=true,pendingGame=null;
 function emulatorFrame(){return document.getElementById('emuFrame')}
 function emulatorDoc(){try{return emulatorFrame().contentWindow.document}catch(e){return null}}
 function emulatorStatus(t){$('#emuStatus').textContent=t}
 function mountGameInEmulator(g){
  const f=emuFrame();
+ $('#fakeDesktop').style.display='none';$('#emuHost').classList.add('active');$('#displayScreen').classList.add('emulating');
  try{
   const w=f.contentWindow;
-  if(!w||!w.Module||!w.Module.FS||!w.Module.FS.writeFile||!w.neostOnReady||!w.__neostReady){
-   emulatorStatus('Chargement du moteur… Patiente quelques secondes puis clique à nouveau sur JOUER.');
-   f.addEventListener('load',()=>mountGameInEmulator(g),{once:true}); return;
+  if(!emuReady||!w||!w.Module||!w.Module.FS||!w.Module.FS.writeFile||!w.neostMountLocalPath){
+   pendingGame=g;emulatorStatus('Démarrage de NeoST… La disquette sera montée dès que le moteur sera prêt.');return;
   }
   const bytes=g.blob instanceof Blob?g.blob:null;
   if(!bytes){emulatorStatus('Cette image disque ne peut pas être lue.');return}
@@ -137,7 +137,6 @@ function mountGameInEmulator(g){
    w.Module.FS.writeFile(path,new Uint8Array(buf));
    if(w.neostMountLocalPath){w.neostMountLocalPath(path,g.fileName)}
    else{emulatorStatus('La version embarquée du moteur ne permet pas encore le montage direct.');return}
-   $('#fakeDesktop').style.display='none';$('#emuHost').classList.add('active');$('#displayScreen').classList.add('emulating');
    emulatorStatus('Disquette envoyée au lecteur A : '+g.name);
   }).catch(e=>emulatorStatus('Erreur de lecture : '+e.message));
  }catch(e){emulatorStatus('Le moteur est en cours de chargement. Réessaie dans un instant.')}
@@ -151,6 +150,7 @@ $('#file').onchange=e=>{let f=e.target.files[0];if(f&&!$('#title').value)$('#tit
 $('#save').onclick=async()=>{let f=$('#file').files[0],n=$('#title').value.trim()||(f&&f.name.replace(/\.[^.]+$/,''));if(!f){alert('Sélectionnez une image disque.');return}if(f.size>25*1024*1024){alert('25 Mo maximum pour ce prototype.');return}
  let g={id:crypto.randomUUID(),name:n,fileName:f.name,size:f.size,ext:f.name.split('.').pop(),blob:f,added:Date.now()};
  await write(g);games=await all();chosen=g.id;$('#dlg').close();$('#title').value='';$('#file').value='';render();select(g.id)};
+window.addEventListener('message',e=>{if(e.origin!==location.origin||e.data?.type!=='neost-ready')return;emuReady=true;emulatorStatus('NeoST est prêt.');if(pendingGame){const g=pendingGame;pendingGame=null;mountGameInEmulator(g)}});
 all().then(x=>{games=x;render()}).catch(()=>$('#shelf').innerHTML='<div class="empty">IndexedDB indisponible dans ce navigateur.</div>');
 $('#emuReset').onclick=()=>{try{emulatorFrame().contentWindow.neostReset&&emulatorFrame().contentWindow.neostReset();emulatorStatus('Reset envoyé au moteur.')}catch(e){emulatorStatus('Moteur en cours de chargement.')}};
 $('#emuJoy').onclick=()=>{emuJoy=!emuJoy;try{const w=emulatorFrame().contentWindow;w.neostSetKeyboardJoystick&&w.neostSetKeyboardJoystick(emuJoy)}catch(e){}$('#emuJoy').textContent='JOYSTICK : '+(emuJoy?'ON':'OFF')};

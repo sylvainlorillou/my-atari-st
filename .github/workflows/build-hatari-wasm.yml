@@ -41,6 +41,7 @@ jobs:
       - name: Build Hatari 2.6.1 for the browser
         run: |
           git clone --depth 1 --branch v2.6.1 https://github.com/hatari/hatari.git /tmp/hatari
+          sed -i "/'--machine','ste'/i\\  '--tos','/share/hatari/tos.img'," /tmp/hatari/src/emscripten.js
           # Expose the Emscripten virtual filesystem so the web UI can mount user disks.
           sed -i 's/\["ccall","cwrap"\]/["ccall","cwrap","FS"]/' /tmp/hatari/src/CMakeLists.txt
           emcmake cmake -S /tmp/hatari -B /tmp/hatari-build -G Ninja -DENABLE_TOOLS=OFF -DENABLE_LIBRETRO=OFF -DENABLE_DSP_EMU=OFF

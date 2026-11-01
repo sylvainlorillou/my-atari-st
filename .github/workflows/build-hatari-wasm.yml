@@ -48,6 +48,15 @@ jobs:
         run: |
           git clone --depth 1 --branch v2.6.1 https://github.com/hatari/hatari.git /tmp/hatari
           sed -i "/'--machine','ste'/i\\  '--tos','/share/hatari/tos.img'," /tmp/hatari/src/emscripten.js
+          # The upstream browser preset points to a hard-drive directory that is not packaged.
+          # Remove it: the test harness mounts floppy images directly through the virtual FS.
+          python3 - <<'PY'
+          p = '/tmp/hatari/src/emscripten.js'
+          s = open(p).read()
+          old = "  '-d','/share/hatari/fs/',\n"
+          assert old in s, 'Could not locate default hard-drive argument'
+          open(p, 'w').write(s.replace(old, '', 1))
+          PY
           # Expose the Emscripten virtual filesystem so the web UI can mount user disks.
           python3 - <<'PY'
           p = '/tmp/hatari/src/CMakeLists.txt'

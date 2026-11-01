@@ -141,7 +141,9 @@ function mountGameInEmulator(g){
   }).catch(e=>emulatorStatus('Erreur de lecture : '+e.message));
  }catch(e){emulatorStatus('Le moteur est en cours de chargement. Réessaie dans un instant.')}
 }
-function select(id){chosen=id;let g=games.find(x=>x.id===id);$('#info').hidden=false;$('#name').textContent=g.name;$('#meta').textContent=g.fileName+' · '+Math.round(g.size/1024)+' Ko';$('#play').onclick=()=>mountGameInEmulator(g);render()}
+function select(id){chosen=id;let g=games.find(x=>x.id===id);$('#info').hidden=false;$('#name').textContent=g.name;$('#meta').textContent=g.fileName+' · '+Math.round(g.size/1024)+' Ko';$('#play').dataset.gameId=g.id;render()}
+document.addEventListener('click',e=>{const b=e.target.closest('#play');if(!b)return;const g=games.find(x=>x.id===b.dataset.gameId);if(!g){emulatorStatus('Aucune disquette sélectionnée.');return}emulatorStatus('Clic JOUER détecté — ouverture de l’émulateur…');mountGameInEmulator(g)});
+window.addEventListener('error',e=>{try{emulatorStatus('Erreur JavaScript : '+(e.message||'voir la console du navigateur'))}catch(_){}});
 function openDlg(){$('#dlg').showModal()}
 $('#add').onclick=openDlg;$('#cancel').onclick=()=>$('#dlg').close();
 $('#screenOk').onclick=()=>document.querySelector('.head').scrollIntoView({behavior:'smooth'});

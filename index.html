@@ -59,20 +59,37 @@ dialog::backdrop{background:#101612b8}
 .field{display:block;font-size:11px;color:#68716b;margin:12px 0}
 .field input{display:block;width:100%;margin-top:5px;padding:9px;border:1px solid #bfc1b8;border-radius:5px}
 @media(max-width:650px){.app{padding:12px}.logo{width:155px}.machine{padding:12px 7px}.monitor{width:99%;padding:13px 13px 10px;border-radius:22px}.bezel{border-width:5px;padding:5px}.disk{flex-basis:102px;height:143px}.label{left:9px;right:9px;top:40px;min-height:67px}.head{align-items:start;flex-direction:column;gap:8px}}
+
+#emuHost{position:absolute;inset:0;display:none;background:#000;z-index:5}
+#emuHost.active{display:block}
+#emuFrame{display:block;width:100%;height:100%;border:0;background:#000}
+.screen.emulating{aspect-ratio:auto;height:auto;min-height:320px;background:#000}
+.screen.emulating:after{display:none}
+.emu-toolbar{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin:8px auto 0;max-width:760px}
+.emu-toolbar .btn{font-size:10px}
+#emuStatus{font-size:10px;color:#36533c;text-align:center;min-height:15px;margin-top:4px}
 </style></head>
 <body><div class="app">
 <header><img class="logo" src="logo.svg" alt="ATARI ST"><button class="btn primary" id="add">＋ AJOUTER UNE DISQUETTE</button></header>
 <section class="machine">
  <div class="monitor">
-  <div class="bezel"><div class="screen">
-   <div class="menu"><b>MY ATARI</b><span>Fichier</span><span>Disque</span><span>Options</span></div>
+  <div class="bezel"><div class="screen" id="displayScreen">
+   <div id="emuHost"><iframe id="emuFrame" title="NeoST Atari emulator" src="neost/index.html?machine=ste&mem=1m"></iframe></div>
+   <div id="fakeDesktop"><div class="menu"><b>MY ATARI</b><span>Fichier</span><span>Disque</span><span>Options</span></div>
    <div class="icons"><span><b>▤</b>Disquette A</span><span><b>▧</b>Disque dur</span><span><b>▣</b>Corbeille</span></div>
    <div class="gem"><strong>MY ATARI ST</strong>Bienvenue sur votre 1040 STE<br>Choisissez une disquette dans votre collection<br><button id="screenOk">OK</button></div>
-   <div class="cursor">◢</div>
+   <div class="cursor">◢</div></div></div>
   </div></div>
   <div class="monitor-label">◢ ATARI <small>COLOUR MONITOR</small><span class="led">●</span></div>
  </div>
  <img class="keyboard" src="atarist.png" alt="Clavier Atari ST — image originale fournie">
+ <div class="emu-toolbar">
+   <button class="btn" id="emuReset">RESET</button>
+   <button class="btn" id="emuFullscreen">PLEIN ÉCRAN</button>
+   <button class="btn" id="emuJoy">JOYSTICK : OFF</button>
+   <button class="btn" id="emuSound">SON : ON</button>
+   <button class="btn" id="emuStop">RETOUR AU BUREAU</button>
+  </div><div id="emuStatus">Émulateur prêt à être lancé avec une disquette sélectionnée.</div>
  <div class="caption">ATARI 1040 STE · CLAVIER ORIGINAL · ÉCRAN 340 × 200</div>
 </section>
 <div class="head"><div><h2>COLLECTION DE DISQUETTES</h2><p id="count">Vos jeux rangés comme dans votre collection d'origine</p></div><button class="btn" id="sort">TRIER A–Z</button></div>
@@ -100,7 +117,32 @@ function render(){
  document.querySelectorAll('[data-id]').forEach(el=>el.onclick=()=>select(el.dataset.id));
  let e=$('#emptyAdd');if(e)e.onclick=openDlg;
 }
-function select(id){chosen=id;let g=games.find(x=>x.id===id);$('#info').hidden=false;$('#name').textContent=g.name;$('#meta').textContent=g.fileName+' · '+Math.round(g.size/1024)+' Ko';$('#play').onclick=()=>alert('Le moteur d’émulation sera raccordé à cette interface dans la prochaine étape.');render()}
+let emuReady=false,emuJoy=false,emuSound=true;
+function emulatorFrame(){return document.getElementById('emuFrame')}
+function emulatorDoc(){try{return emulatorFrame().contentWindow.document}catch(e){return null}}
+function emulatorStatus(t){$('#emuStatus').textContent=t}
+function mountGameInEmulator(g){
+ const f=emuFrame();
+ try{
+  const w=f.contentWindow;
+  if(!w||!w.Module||!w.Module.FS||!w.Module.FS.writeFile||!w.neostOnReady||!w.__neostReady){
+   emulatorStatus('Chargement du moteur… Patiente quelques secondes puis clique à nouveau sur JOUER.');
+   f.addEventListener('load',()=>mountGameInEmulator(g),{once:true}); return;
+  }
+  const bytes=g.blob instanceof Blob?g.blob:null;
+  if(!bytes){emulatorStatus('Cette image disque ne peut pas être lue.');return}
+  bytes.arrayBuffer().then(buf=>{
+   const ext=(g.ext||'st').toLowerCase().replace(/[^a-z0-9]/g,'');
+   const path='/disks/my-atari-'+Date.now()+'.'+ext;
+   w.Module.FS.writeFile(path,new Uint8Array(buf));
+   if(w.neostMountLocalPath){w.neostMountLocalPath(path,g.fileName)}
+   else{emulatorStatus('La version embarquée du moteur ne permet pas encore le montage direct.');return}
+   $('#fakeDesktop').style.display='none';$('#emuHost').classList.add('active');$('#displayScreen').classList.add('emulating');
+   emulatorStatus('Disquette envoyée au lecteur A : '+g.name);
+  }).catch(e=>emulatorStatus('Erreur de lecture : '+e.message));
+ }catch(e){emulatorStatus('Le moteur est en cours de chargement. Réessaie dans un instant.')}
+}
+function select(id){chosen=id;let g=games.find(x=>x.id===id);$('#info').hidden=false;$('#name').textContent=g.name;$('#meta').textContent=g.fileName+' · '+Math.round(g.size/1024)+' Ko';$('#play').onclick=()=>mountGameInEmulator(g);render()}
 function openDlg(){$('#dlg').showModal()}
 $('#add').onclick=openDlg;$('#cancel').onclick=()=>$('#dlg').close();
 $('#screenOk').onclick=()=>document.querySelector('.head').scrollIntoView({behavior:'smooth'});
@@ -110,4 +152,9 @@ $('#save').onclick=async()=>{let f=$('#file').files[0],n=$('#title').value.trim(
  let g={id:crypto.randomUUID(),name:n,fileName:f.name,size:f.size,ext:f.name.split('.').pop(),blob:f,added:Date.now()};
  await write(g);games=await all();chosen=g.id;$('#dlg').close();$('#title').value='';$('#file').value='';render();select(g.id)};
 all().then(x=>{games=x;render()}).catch(()=>$('#shelf').innerHTML='<div class="empty">IndexedDB indisponible dans ce navigateur.</div>');
+$('#emuReset').onclick=()=>{try{emulatorFrame().contentWindow.neostReset&&emulatorFrame().contentWindow.neostReset();emulatorStatus('Reset envoyé au moteur.')}catch(e){emulatorStatus('Moteur en cours de chargement.')}};
+$('#emuJoy').onclick=()=>{emuJoy=!emuJoy;try{const w=emulatorFrame().contentWindow;w.neostSetKeyboardJoystick&&w.neostSetKeyboardJoystick(emuJoy)}catch(e){}$('#emuJoy').textContent='JOYSTICK : '+(emuJoy?'ON':'OFF')};
+$('#emuSound').onclick=()=>{emuSound=!emuSound;try{const w=emulatorFrame().contentWindow;w.neostSetDriveSound&&w.neostSetDriveSound(emuSound)}catch(e){}$('#emuSound').textContent='SON : '+(emuSound?'ON':'OFF')};
+$('#emuFullscreen').onclick=()=>{const target=$('#emuHost');if(target.requestFullscreen)target.requestFullscreen()};
+$('#emuStop').onclick=()=>{$('#emuHost').classList.remove('active');$('#fakeDesktop').style.display='block';$('#displayScreen').classList.remove('emulating');emulatorStatus('Retour au bureau MY ATARI ST.')};
 </script></body></html>

@@ -35,8 +35,8 @@ jobs:
         run: |
           git clone --depth 1 https://github.com/hatari/emutos.git /tmp/emutos
           make -C /tmp/emutos ELF=1 TOOLCHAIN_PREFIX=m68k-linux-gnu- 1024
-          mkdir -p /tmp/hatari-build/files/share/hatari
-          cp /tmp/emutos/etos1024k.img /tmp/hatari-build/files/share/hatari/tos.img
+          mkdir -p /tmp/hatari-build/files
+          cp /tmp/emutos/etos1024k.img /tmp/hatari-build/files/tos.img
 
       - name: Build Hatari 2.6.1 for the browser
         run: |

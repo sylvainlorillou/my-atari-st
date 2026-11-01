@@ -48,6 +48,8 @@ jobs:
         run: |
           git clone --depth 1 --branch v2.6.1 https://github.com/hatari/hatari.git /tmp/hatari
           sed -i "/'--machine','ste'/i\\  '--tos','/share/hatari/tos.img'," /tmp/hatari/src/emscripten.js
+          # Enable Hatari's built-in keyboard joystick on ST port 1 (arrows + right Ctrl).
+          sed -i "/'--machine','ste'/i\\  '--joy1','keys'," /tmp/hatari/src/emscripten.js
           # The upstream browser preset points to a hard-drive directory that is not packaged.
           # Remove it: the test harness mounts floppy images directly through the virtual FS.
           python3 - <<'PY'

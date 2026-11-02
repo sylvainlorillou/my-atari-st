@@ -75,6 +75,14 @@ jobs:
           cp /tmp/hatari-build/src/hatari.js hatari/hatari.js
           cp /tmp/hatari-build/src/hatari.wasm hatari/hatari.wasm
           if [ -f /tmp/hatari-build/src/hatari.data ]; then cp /tmp/hatari-build/src/hatari.data hatari/hatari.data; fi
+          # Strip Hatari's standalone page chrome and let its canvas occupy the iframe viewport.
+          python3 - <<'PY'
+          p = 'hatari/hatari.html'
+          s = open(p, encoding='utf-8').read()
+          css = '''html,body{width:100%;height:100%;margin:0;padding:0;overflow:hidden;background:#000}body>span,.spinner,#status,#controls,#progress,#output{display:none!important}.emscripten_border{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:0!important;overflow:hidden;background:#000}.emscripten_border canvas.emscripten{display:block;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;border:0;background:#000}'''
+          s = s.replace('</style>', css + '</style>', 1)
+          open(p, 'w', encoding='utf-8').write(s)
+          PY
           ls -lh hatari/
 
       - name: Commit browser build to the test branch

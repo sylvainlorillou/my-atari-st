@@ -15,8 +15,8 @@ body{margin:0;background:#d8d8d2;color:#252a28;font:14px Arial,sans-serif}
 .btn{border:1px solid #9da197;background:#fff;padding:9px 12px;border-radius:5px;font-weight:bold;font-size:11px;cursor:pointer}
 .primary{background:#244c9b;color:#fff;border-color:#244c9b}
 #status{font-size:12px;color:#526052;margin-top:8px;min-height:18px}
-.stage{background:#111;border:9px solid #73766f;border-radius:12px;overflow:hidden;aspect-ratio:4/3;position:relative;width:100%}
-.stage iframe{display:block;width:100%;height:100%;min-height:520px;border:0;background:#000}
+.stage{background:#000;border:0;border-radius:12px;overflow:hidden;aspect-ratio:4/3;position:relative;width:100%}.stage:fullscreen{width:100vw;height:100vh;aspect-ratio:auto;border:0;border-radius:0;background:#000}
+.stage iframe{display:block;width:100%;height:100%;min-height:0;border:0;background:#000}
 .hint{font-size:12px;line-height:1.55;color:#59625b}
 .small{font-size:10px;color:#72796f}
 .virtual{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:center}
@@ -45,7 +45,7 @@ body{margin:0;background:#d8d8d2;color:#252a28;font:14px Arial,sans-serif}
   <div id="status">Vérification du moteur Hatari…</div>
  </section>
  <section class="stage" id="stage">
-  <iframe id="hatari" title="Émulateur Hatari" src="hatari/hatari.html"></iframe>
+  <iframe id="hatari" title="Émulateur Hatari" src="hatari/hatari.html" allowfullscreen></iframe>
  </section>
  <section class="panel">
   <h3>Commandes clavier — Mac</h3>
@@ -68,7 +68,7 @@ frame.addEventListener('load',()=>{status('Chargement du moteur Hatari WebAssemb
 $('#disk').addEventListener('change',e=>{selected=e.target.files[0]||null;$('#insert').disabled=!selected;status(selected?'Image prête : '+selected.name+' ('+Math.round(selected.size/1024)+' Ko).':'Aucune image sélectionnée.')});
 $('#insert').onclick=async()=>{if(!selected)return;const m=module();if(!m||!m.FS||!m.ccall){status('Le moteur n’est pas encore prêt.');return}try{const bytes=new Uint8Array(await selected.arrayBuffer()),path='/tmp/my-atari-'+Date.now()+'-'+selected.name.replace(/[^a-zA-Z0-9._-]/g,'_');m.FS.writeFile(path,bytes);const result=m.ccall('Floppy_SetDiskFileName','string',['number','string','string'],[0,path,null]);if(!result){status('Hatari refuse cette image ou ne trouve pas le fichier.');return}const ok=m.ccall('Floppy_InsertDiskIntoDrive','number',['number'],[0]);if(!ok){status('Insertion impossible. Vérifiez le format de l’image.');return}status('Disquette insérée dans le lecteur A : '+selected.name)}catch(err){status('Erreur lors du montage : '+err.message)}};
 $('#reset').onclick=()=>{const m=module();if(m&&m.ccall){m.ccall('Reset_Warm',null,[],[]);status('Reset demandé.')}else status('Moteur non prêt.')};
-$('#full').onclick=()=>{const s=$('#stage');if(s.requestFullscreen)s.requestFullscreen()};
+$('#full').onclick=()=>{const m=module();if(m&&typeof m.requestFullscreen==='function'){try{m.requestFullscreen(false,true);return}catch(e){status('Plein écran Hatari indisponible : '+e.message)}}const s=$('#stage');if(s.requestFullscreen)s.requestFullscreen()};
 function dispatchToHatari(key,type){
  const d=frame.contentDocument;if(!d)return;
  const map={ArrowUp:38,ArrowDown:40,ArrowLeft:37,ArrowRight:39,ControlRight:17};

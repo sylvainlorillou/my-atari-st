@@ -48,25 +48,11 @@ body{margin:0;background:#d8d8d2;color:#252a28;font:14px Arial,sans-serif}
   <iframe id="hatari" title="Émulateur Hatari" src="hatari/hatari.html"></iframe>
  </section>
  <section class="panel">
-  <h3>Commandes virtuelles — clavier Mac</h3>
-  <p class="hint">Utilise ces boutons à la souris ou au doigt. Maintiens une direction pour la conserver ; relâche pour arrêter.</p>
-  <div class="virtual">
-   <div>
-    <div class="dpad" aria-label="Joystick">
-     <span></span><button class="keybtn" data-key="ArrowUp" aria-label="Haut">▲</button><span></span>
-     <button class="keybtn" data-key="ArrowLeft" aria-label="Gauche">◀</button><button class="keybtn" data-key="ArrowDown" aria-label="Bas">▼</button><button class="keybtn" data-key="ArrowRight" aria-label="Droite">▶</button>
-    </div>
-    <p class="control-note" style="text-align:center">Joystick port 1</p>
-   </div>
-   <div style="text-align:center">
-    <button class="fire" data-key="ControlRight" aria-label="Fire">FIRE</button>
-    <p class="control-note">Maintenir pour tirer</p>
-   </div>
-  </div>
-  <div class="function-keys" aria-label="Touches de fonction">
-   <button class="keybtn" data-key="F1">F1</button><button class="keybtn" data-key="F2">F2</button><button class="keybtn" data-key="F3">F3</button><button class="keybtn" data-key="F4">F4</button><button class="keybtn" data-key="F5">F5</button><button class="keybtn" data-key="F6">F6</button><button class="keybtn" data-key="F7">F7</button><button class="keybtn" data-key="F8">F8</button><button class="keybtn" data-key="F9">F9</button><button class="keybtn" data-key="F10">F10</button>
-  </div>
-  <p class="control-note">Ces boutons évitent les combinaisons Fn propres aux claviers Mac.</p>
+  <h3>Commandes clavier — Mac</h3>
+  <p class="hint"><b>Déplacements :</b> flèches directionnelles.</p>
+  <p class="hint"><b>Joystick FIRE :</b> touche <kbd>`</kbd> (accent grave). Maintenir pour tirer. La barre d'espace reste libre pour les jeux.</p>
+  <p class="hint"><b>Touches de fonction :</b> <kbd>Fn + 1</kbd> à <kbd>Fn + 0</kbd> pour F1 à F10, si macOS transmet ces touches au navigateur. Le réglage des touches de fonction dans macOS peut modifier leur comportement.</p>
+  <p class="control-note">Clique une fois dans l'écran Atari avant de jouer. Plus besoin des boutons virtuels.</p>
  </section>
  <section class="panel">
   <p class="hint">Pour tester : démarre un jeu depuis la disquette, puis essaie la croix et FIRE. Clique dans l'écran Atari pour lui donner le focus si nécessaire.</p>
@@ -83,18 +69,35 @@ $('#disk').addEventListener('change',e=>{selected=e.target.files[0]||null;$('#in
 $('#insert').onclick=async()=>{if(!selected)return;const m=module();if(!m||!m.FS||!m.ccall){status('Le moteur n’est pas encore prêt.');return}try{const bytes=new Uint8Array(await selected.arrayBuffer()),path='/tmp/my-atari-'+Date.now()+'-'+selected.name.replace(/[^a-zA-Z0-9._-]/g,'_');m.FS.writeFile(path,bytes);const result=m.ccall('Floppy_SetDiskFileName','string',['number','string','string'],[0,path,null]);if(!result){status('Hatari refuse cette image ou ne trouve pas le fichier.');return}const ok=m.ccall('Floppy_InsertDiskIntoDrive','number',['number'],[0]);if(!ok){status('Insertion impossible. Vérifiez le format de l’image.');return}status('Disquette insérée dans le lecteur A : '+selected.name)}catch(err){status('Erreur lors du montage : '+err.message)}};
 $('#reset').onclick=()=>{const m=module();if(m&&m.ccall){m.ccall('Reset_Warm',null,[],[]);status('Reset demandé.')}else status('Moteur non prêt.')};
 $('#full').onclick=()=>{const s=$('#stage');if(s.requestFullscreen)s.requestFullscreen()};
-function sendKey(key,type){
- const w=frame.contentWindow;if(!w)return;
+function dispatchToHatari(key,type){
+ const d=frame.contentDocument;if(!d)return;
  const map={ArrowUp:38,ArrowDown:40,ArrowLeft:37,ArrowRight:39,ControlRight:17};
  const funcs={F1:112,F2:113,F3:114,F4:115,F5:116,F6:117,F7:118,F8:119,F9:120,F10:121};
- const code=map[key]||funcs[key];
- try{const ev=new w.KeyboardEvent(type,{key:key==='ControlRight'?'Control':key,code:key==='ControlRight'?'ControlRight':key,keyCode:code,which:code,location:key==='ControlRight'?2:0,bubbles:true,cancelable:true});Object.defineProperty(ev,'keyCode',{get:()=>code});Object.defineProperty(ev,'which',{get:()=>code});w.document.dispatchEvent(ev)}catch(e){status('Commande clavier indisponible : '+e.message)}
+ const code=map[key]||funcs[key];if(!code)return;
+ const ev=new frame.contentWindow.KeyboardEvent(type,{key:key==='ControlRight'?'Control':key,code:key==='ControlRight'?'ControlRight':key,keyCode:code,which:code,location:key==='ControlRight'?2:0,bubbles:true,cancelable:true});
+ try{Object.defineProperty(ev,'keyCode',{get:()=>code});Object.defineProperty(ev,'which',{get:()=>code})}catch(e){}
+ d.dispatchEvent(ev);
 }
-document.querySelectorAll('[data-key]').forEach(b=>{
- const key=b.dataset.key;
- const down=e=>{e.preventDefault();if(b.dataset.down==='1')return;b.dataset.down='1';b.classList.add('pressed');sendKey(key,'keydown')};
- const up=e=>{e.preventDefault();if(b.dataset.down!=='1')return;b.dataset.down='0';b.classList.remove('pressed');sendKey(key,'keyup')};
- b.addEventListener('pointerdown',down);['pointerup','pointercancel','pointerleave'].forEach(t=>b.addEventListener(t,up));b.addEventListener('contextmenu',e=>e.preventDefault());
+function isFireKey(e){return e.code==='Backquote'||e.key==='\`'||e.key==='²'}
+function handleHatariKey(e){
+ if(isFireKey(e)){
+  e.preventDefault();e.stopImmediatePropagation();
+  dispatchToHatari('ControlRight',e.type);
+ }
+}
+frame.addEventListener('load',()=>{try{
+ const d=frame.contentDocument;
+ d.addEventListener('keydown',handleHatariKey,true);
+ d.addEventListener('keyup',handleHatariKey,true);
+}catch(e){status('Raccourci FIRE indisponible : '+e.message)}});
+document.addEventListener('keydown',e=>{
+ if(e.target.closest('input,button,label,select,textarea'))return;
+ if(isFireKey(e)){e.preventDefault();dispatchToHatari('ControlRight','keydown');}
+ else if(/^F([1-9]|10)$/.test(e.key)){e.preventDefault();dispatchToHatari(e.key,'keydown');}
+});
+document.addEventListener('keyup',e=>{
+ if(isFireKey(e))dispatchToHatari('ControlRight','keyup');
+ else if(/^F([1-9]|10)$/.test(e.key))dispatchToHatari(e.key,'keyup');
 });
 </script>
 </body>

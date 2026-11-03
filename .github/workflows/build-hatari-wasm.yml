@@ -73,6 +73,7 @@ jobs:
               case 2: return SDLK_DOWN;
               case 3: return SDLK_LEFT;
               case 4: return SDLK_RIGHT;
+              case 5: return SDLK_RCTRL;
               default: return (key >= 32 && key <= 126) ? key : SDLK_UNKNOWN;
               }
           }

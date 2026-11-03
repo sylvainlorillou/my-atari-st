@@ -61,6 +61,17 @@ body{margin:0;background:#d8d8d2;color:#252a28;font:14px Arial,sans-serif}
  <section class="stage" id="stage">
   <iframe id="hatari" title="Émulateur Hatari" src="hatari/hatari.html" allowfullscreen></iframe>
  </section>
+ <section class="panel" id="joySettings">
+  <h3>Configuration du joystick clavier</h3>
+  <div class="controls">
+   <label class="hint"><input type="checkbox" id="joyEnabled" checked> Activer le joystick clavier</label>
+   <label class="hint">Disposition : <select id="joyLayout"><option value="arrows">Flèches</option><option value="wasd">WASD</option><option value="zqsd">ZQSD</option><option value="ijkl">IJKL</option></select></label>
+  </div>
+  <div class="controls" style="margin-top:10px">
+   <label class="hint"><input type="checkbox" id="joyUp" checked> Haut</label><label class="hint"><input type="checkbox" id="joyDown" checked> Bas</label><label class="hint"><input type="checkbox" id="joyLeft" checked> Gauche</label><label class="hint"><input type="checkbox" id="joyRight" checked> Droite</label><label class="hint"><input type="checkbox" id="joyFire" checked> FIRE (accent grave)</label>
+  </div>
+  <p class="small" id="joyMessage">Les réglages sont mémorisés dans ce navigateur. Décoche une direction pour libérer sa touche pour le clavier Atari.</p>
+ </section>
  <section class="panel">
   <h3>Commandes clavier — Mac</h3>
   <p class="hint"><b>Joystick :</b> flèches directionnelles. Pour transmettre une flèche au clavier Atari plutôt qu’au joystick, maintiens <kbd>Maj</kbd> en même temps que la flèche (fonction native de Hatari).</p>
@@ -79,8 +90,12 @@ const $=s=>document.querySelector(s),frame=$('#hatari');
 const selected={0:null,1:null},mounted={0:null,1:null};
 function status(s){$('#status').textContent=s}
 function module(){try{return frame.contentWindow.Module||null}catch(e){return null}}
-function check(){const m=module();if(m&&m.calledRun){status('Hatari est démarré. Les lecteurs A et B sont disponibles.');return}setTimeout(check,700)}
-frame.addEventListener('load',()=>{status('Chargement du moteur Hatari WebAssembly…');check()});
+const joyDefaults={enabled:true,layout:'arrows',up:true,down:true,left:true,right:true,fire:true};
+function joySettings(){try{return {...joyDefaults,...JSON.parse(localStorage.getItem('myAtariJoySettings')||'{}')}}catch(e){return {...joyDefaults}}}
+function applyJoySettings(){const m=module(),s=joySettings(),layout={arrows:[1,2,3,4],wasd:[119,115,97,100],zqsd:[122,115,113,100],ijkl:[105,107,106,108]}[s.layout]||[1,2,3,4];const values=[s.enabled?1:0,s.enabled&&s.up?layout[0]:0,s.enabled&&s.down?layout[1]:0,s.enabled&&s.left?layout[2]:0,s.enabled&&s.right?layout[3]:0,s.enabled&&s.fire?5:0];if(!m||!m.calledRun||!m.ccall){$('#joyMessage').textContent='Réglages prêts ; ils seront appliqués au démarrage du moteur.';return}try{m.ccall('Browser_SetJoystickKeys',null,['number','number','number','number','number','number'],values);$('#joyMessage').textContent='Configuration appliquée. Les touches décochées sont libres pour le clavier Atari.'}catch(e){$('#joyMessage').textContent='Le moteur doit être reconstruit pour activer ces réglages.'}}
+function loadJoyControls(){const s=joySettings();for(const k of ['enabled','layout','up','down','left','right','fire']){const el=$('#joy'+k[0].toUpperCase()+k.slice(1));if(!el)continue;if(el.type==='checkbox')el.checked=!!s[k];else el.value=s[k];el.addEventListener('change',()=>{const next=joySettings();for(const key of ['enabled','layout','up','down','left','right','fire']){const node=$('#joy'+key[0].toUpperCase()+key.slice(1));next[key]=node.type==='checkbox'?node.checked:node.value}localStorage.setItem('myAtariJoySettings',JSON.stringify(next));applyJoySettings()})}}
+function check(){const m=module();if(m&&m.calledRun){status('Hatari est démarré. Les lecteurs A et B sont disponibles.');applyJoySettings();return}setTimeout(check,700)}
+frame.addEventListener('load',()=>{status('Chargement du moteur Hatari WebAssembly…');loadJoyControls();check()});
 function bindDrive(drive){
  const letter=drive===0?'A':'B',input=$('#disk'+letter),insert=$('#insert'+letter),label=$('#label'+letter);
  input.addEventListener('change',e=>{selected[drive]=e.target.files[0]||null;insert.disabled=!selected[drive];if(selected[drive])label.textContent='Lecteur '+letter+' — prêt : '+selected[drive].name});

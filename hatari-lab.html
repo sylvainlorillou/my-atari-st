@@ -37,12 +37,26 @@ body{margin:0;background:#d8d8d2;color:#252a28;font:14px Arial,sans-serif}
   <h2>Prototype d'émulation Hatari</h2>
   <p class="hint">Banc d'essai séparé : il ne remplace pas encore l'émulateur de la page principale et ne modifie pas votre bibliothèque de disquettes.</p>
   <div class="controls">
-   <label class="btn">CHOISIR UNE DISQUETTE <input id="disk" type="file" accept=".st,.msa,.dim,.stx,.zip" hidden></label>
-   <button class="btn primary" id="insert" disabled>INSÉRER DANS LE LECTEUR A</button>
    <button class="btn" id="reset">RESET</button>
    <button class="btn" id="full">PLEIN ÉCRAN</button>
   </div>
   <div id="status">Vérification du moteur Hatari…</div>
+ </section>
+ <section class="panel">
+  <h3>Lecteurs de disquettes</h3>
+  <div class="controls">
+   <label class="btn">CHOISIR DISQUETTE A <input id="diskA" type="file" accept=".st,.msa,.dim,.stx,.zip" hidden></label>
+   <button class="btn primary" id="insertA" disabled>INSÉRER A</button>
+   <button class="btn" id="ejectA">ÉJECTER A</button>
+  </div>
+  <p class="hint" id="labelA">Lecteur A : vide</p>
+  <div class="controls">
+   <label class="btn">CHOISIR DISQUETTE B <input id="diskB" type="file" accept=".st,.msa,.dim,.stx,.zip" hidden></label>
+   <button class="btn primary" id="insertB" disabled>INSÉRER B</button>
+   <button class="btn" id="ejectB">ÉJECTER B</button>
+  </div>
+  <p class="hint" id="labelB">Lecteur B : vide</p>
+  <p class="control-note">Pour remplacer une disquette, sélectionne le nouveau fichier puis clique sur INSÉRER dans le lecteur concerné. Hatari gère le retrait et l'insertion dans le lecteur choisi.</p>
  </section>
  <section class="stage" id="stage">
   <iframe id="hatari" title="Émulateur Hatari" src="hatari/hatari.html" allowfullscreen></iframe>
@@ -60,15 +74,42 @@ body{margin:0;background:#d8d8d2;color:#252a28;font:14px Arial,sans-serif}
  </section>
 </main>
 <script>
-const $=s=>document.querySelector(s),frame=$('#hatari');let selected=null;
+const $=s=>document.querySelector(s),frame=$('#hatari');
+const selected={0:null,1:null},mounted={0:null,1:null};
 function status(s){$('#status').textContent=s}
 function module(){try{return frame.contentWindow.Module||null}catch(e){return null}}
-function check(){const m=module();if(m&&m.calledRun){status('Hatari est démarré. Choisissez une image ST/MSA/DIM/STX puis insérez-la dans le lecteur A.');$('#insert').disabled=!selected;return}setTimeout(check,700)}
+function check(){const m=module();if(m&&m.calledRun){status('Hatari est démarré. Les lecteurs A et B sont disponibles.');return}setTimeout(check,700)}
 frame.addEventListener('load',()=>{status('Chargement du moteur Hatari WebAssembly…');check()});
-$('#disk').addEventListener('change',e=>{selected=e.target.files[0]||null;$('#insert').disabled=!selected;status(selected?'Image prête : '+selected.name+' ('+Math.round(selected.size/1024)+' Ko).':'Aucune image sélectionnée.')});
-$('#insert').onclick=async()=>{if(!selected)return;const m=module();if(!m||!m.FS||!m.ccall){status('Le moteur n’est pas encore prêt.');return}try{const bytes=new Uint8Array(await selected.arrayBuffer()),path='/tmp/my-atari-'+Date.now()+'-'+selected.name.replace(/[^a-zA-Z0-9._-]/g,'_');m.FS.writeFile(path,bytes);const result=m.ccall('Floppy_SetDiskFileName','string',['number','string','string'],[0,path,null]);if(!result){status('Hatari refuse cette image ou ne trouve pas le fichier.');return}const ok=m.ccall('Floppy_InsertDiskIntoDrive','number',['number'],[0]);if(!ok){status('Insertion impossible. Vérifiez le format de l’image.');return}status('Disquette insérée dans le lecteur A : '+selected.name)}catch(err){status('Erreur lors du montage : '+err.message)}};
+function bindDrive(drive){
+ const letter=drive===0?'A':'B',input=$('#disk'+letter),insert=$('#insert'+letter),label=$('#label'+letter);
+ input.addEventListener('change',e=>{selected[drive]=e.target.files[0]||null;insert.disabled=!selected[drive];if(selected[drive])label.textContent='Lecteur '+letter+' — prêt : '+selected[drive].name});
+ insert.onclick=async()=>{
+  const file=selected[drive];if(!file)return;
+  const m=module();if(!m||!m.FS||!m.ccall){status('Le moteur n’est pas encore prêt.');return}
+  try{
+   const bytes=new Uint8Array(await file.arrayBuffer()),path='/tmp/my-atari-'+letter+'-'+Date.now()+'-'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+   m.FS.writeFile(path,bytes);
+   const result=m.ccall('Floppy_SetDiskFileName','string',['number','string','string'],[drive,path,null]);
+   if(!result){status('Hatari refuse cette image pour le lecteur '+letter+'.');return}
+   const ok=m.ccall('Floppy_InsertDiskIntoDrive','number',['number'],[drive]);
+   if(!ok){status('Insertion impossible dans le lecteur '+letter+'. Vérifie le format de l’image.');return}
+   mounted[drive]=file.name;label.textContent='Lecteur '+letter+' — '+file.name;
+   status('Disquette insérée dans le lecteur '+letter+' : '+file.name);
+  }catch(err){status('Erreur lors du montage dans le lecteur '+letter+' : '+err.message)}
+ };
+ $('#eject'+letter).onclick=()=>{
+  const m=module();if(!m||!m.ccall){status('Moteur non prêt.');return}
+  try{
+   m.ccall('Floppy_SetDiskFileName','string',['number','string','string'],[drive,'none',null]);
+   m.ccall('Floppy_InsertDiskIntoDrive','number',['number'],[drive]);
+   mounted[drive]=null;selected[drive]=null;input.value='';insert.disabled=true;
+   label.textContent='Lecteur '+letter+' : vide';status('Lecteur '+letter+' éjecté.');
+  }catch(err){status('Erreur lors de l’éjection du lecteur '+letter+' : '+err.message)}
+ };
+}
+bindDrive(0);bindDrive(1);
 $('#reset').onclick=()=>{const m=module();if(m&&m.ccall){m.ccall('Reset_Warm',null,[],[]);status('Reset demandé.')}else status('Moteur non prêt.')};
-$('#full').onclick=()=>{const m=module();if(m&&typeof m.requestFullscreen==='function'){try{m.requestFullscreen(false,true);return}catch(e){status('Plein écran Hatari indisponible : '+e.message)}}const s=$('#stage');if(s.requestFullscreen)s.requestFullscreen()};
+$('#full').onclick=()=>{const m=module();if(m&&typeof m.requestFullscreen==='function'){try{m.requestFullscreen(false,false);return}catch(e){status('Plein écran Hatari indisponible : '+e.message)}}const s=$('#stage');if(s.requestFullscreen)s.requestFullscreen()};
 function dispatchToHatari(key,type){
  const d=frame.contentDocument;if(!d)return;
  const map={ArrowUp:38,ArrowDown:40,ArrowLeft:37,ArrowRight:39,ControlRight:17};

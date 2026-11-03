@@ -73,6 +73,27 @@ body{margin:0;background:#d8d8d2;color:#252a28;font:14px Arial,sans-serif}
   <p class="small" id="joyMessage">Les réglages sont mémorisés dans ce navigateur. Décoche une direction pour libérer sa touche pour le clavier Atari.</p>
  </section>
  <section class="panel">
+ <section class="panel" id="keyboardTester">
+  <h3>Testeur de clavier Atari ST</h3>
+  <p class="hint">Appuie sur une touche pour voir ce que le navigateur détecte et comment MY ATARI ST l'interprète. Le test fonctionne aussi lorsque l'écran Hatari a le focus.</p>
+  <div class="controls" style="margin:10px 0">
+   <button class="btn primary" id="keyboardTestFocus" type="button">ACTIVER LE TESTEUR</button>
+   <button class="btn" id="keyboardTestClear" type="button">EFFACER</button>
+   <span class="small" id="keyboardTestState">En attente d'une touche…</span>
+  </div>
+  <div id="keyboardTestDisplay" tabindex="0" role="group" aria-label="Zone de test clavier" style="border:1px dashed #8b9388;border-radius:8px;background:#fff;padding:14px;min-height:72px;outline:none">
+   <div style="font-size:11px;color:#687064">DERNIÈRE TOUCHE DÉTECTÉE</div>
+   <div id="keyboardTestKey" style="font-size:28px;font-weight:bold;margin:5px 0">—</div>
+   <div id="keyboardTestDetails" class="small">Clique sur « Activer le testeur », puis appuie sur une touche.</div>
+  </div>
+  <div style="margin-top:12px;overflow-x:auto">
+   <table style="width:100%;border-collapse:collapse;font-size:12px">
+    <thead><tr style="text-align:left;background:#e8e9e2"><th style="padding:7px">Touche Mac</th><th style="padding:7px">Code physique</th><th style="padding:7px">Code navigateur</th><th style="padding:7px">Interprétation MY ATARI ST</th></tr></thead>
+    <tbody id="keyboardTestRows"><tr><td colspan="4" style="padding:8px;color:#687064">Aucune touche testée.</td></tr></tbody>
+   </table>
+  </div>
+  <p class="small">Le testeur observe les événements sans les bloquer. Il affiche les codes reçus par le navigateur, pas un numéro de touche Atari universel : Hatari et les jeux peuvent ensuite interpréter certaines touches différemment.</p>
+ </section>
   <h3>Commandes clavier — Mac</h3>
   <p class="hint"><b>Joystick :</b> flèches directionnelles. Pour transmettre une flèche au clavier Atari plutôt qu’au joystick, maintiens <kbd>Maj</kbd> en même temps que la flèche (fonction native de Hatari).</p>
   <p class="hint"><b>Joystick FIRE :</b> touche <kbd>`</kbd> (accent grave). Maintenir pour tirer. La barre d'espace reste libre pour les jeux.</p>
@@ -127,6 +148,42 @@ bindDrive(0);bindDrive(1);
 $('#reset').onclick=()=>{const m=module();if(m&&m.ccall){m.ccall('Reset_Warm',null,[],[]);status('Reset demandé.')}else status('Moteur non prêt.')};
 $('#full').onclick=()=>{const s=$('#stage');if(document.fullscreenElement){document.exitFullscreen();return}if(s.requestFullscreen){s.requestFullscreen().catch(e=>status('Plein écran indisponible : '+e.message))}else status('Le plein écran n’est pas pris en charge par ce navigateur.')};
 document.addEventListener('fullscreenchange',()=>{frame.style.width='100%';frame.style.height='100%';try{frame.contentWindow.dispatchEvent(new Event('resize'))}catch(e){};status(document.fullscreenElement?'Mode plein écran actif.':'Retour à l’affichage normal.')});
+
+const testRows=[];
+function keyMeaning(e){
+ const cfg=joySettings();
+ if(cfg.enabled){
+  const map={arrows:{ArrowUp:'Haut (joystick)',ArrowDown:'Bas (joystick)',ArrowLeft:'Gauche (joystick)',ArrowRight:'Droite (joystick)'},wasd:{KeyW:'Haut (joystick)',KeyS:'Bas (joystick)',KeyA:'Gauche (joystick)',KeyD:'Droite (joystick)'},zqsd:{KeyZ:'Haut (joystick)',KeyS:'Bas (joystick)',KeyQ:'Gauche (joystick)',KeyD:'Droite (joystick)'},ijkl:{KeyI:'Haut (joystick)',KeyK:'Bas (joystick)',KeyJ:'Gauche (joystick)',KeyL:'Droite (joystick)'}};
+  const directions=map[cfg.layout]||map.arrows;
+  if(e.code==='Backquote'&&cfg.fire)return 'FIRE (joystick)';
+  if(directions[e.code])return directions[e.code];
+ }
+ if(e.key===' '||e.code==='Space')return 'Espace Atari';
+ if(e.key==='Enter')return 'Entrée Atari';
+ if(e.key==='Escape')return 'Échap Atari';
+ if(e.key==='Tab')return 'Tabulation Atari';
+ if(/^F([1-9]|10)$/.test(e.key))return e.key+' Atari (si transmis par macOS)';
+ if(e.key.startsWith('Arrow'))return 'Flèche clavier Atari (Maj + flèche si joystick actif)';
+ if(e.key.length===1)return 'Caractère « '+e.key+' » transmis à Hatari';
+ return 'Événement clavier reçu — à vérifier dans Hatari';
+}
+function recordKeyboardEvent(e,source){
+ const key=e.key===' '?'Espace':(e.key||'Touche inconnue');
+ $('#keyboardTestKey').textContent=key;
+ $('#keyboardTestDetails').textContent='code = '+e.code+' · keyCode = '+e.keyCode+' · location = '+e.location+' · source = '+source+' · '+(e.type==='keyup'?'relâchée':'enfoncée');
+ $('#keyboardTestState').textContent=e.type==='keyup'?'Touche relâchée':'Touche détectée';
+ if(e.type==='keydown'&&!e.repeat){
+  testRows.unshift({key,code:e.code||'—',keyCode:e.keyCode,meaning:keyMeaning(e)});
+  testRows.splice(12);
+  $('#keyboardTestRows').innerHTML=testRows.map(r=>'<tr><td style="padding:7px;border-top:1px solid #e1e3dc">'+escapeHtml(r.key)+'</td><td style="padding:7px;border-top:1px solid #e1e3dc"><code>'+escapeHtml(r.code)+'</code></td><td style="padding:7px;border-top:1px solid #e1e3dc">'+r.keyCode+'</td><td style="padding:7px;border-top:1px solid #e1e3dc">'+escapeHtml(r.meaning)+'</td></tr>').join('');
+ }
+}
+function escapeHtml(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+$('#keyboardTestFocus').addEventListener('click',()=>{$('#keyboardTestDisplay').focus();$('#keyboardTestState').textContent='Test actif : appuie sur une touche.'});
+$('#keyboardTestClear').addEventListener('click',()=>{testRows.length=0;$('#keyboardTestRows').innerHTML='<tr><td colspan="4" style="padding:8px;color:#687064">Aucune touche testée.</td></tr>';$('#keyboardTestKey').textContent='—';$('#keyboardTestDetails').textContent='Historique effacé.'});
+$('#keyboardTestDisplay').addEventListener('keydown',e=>recordKeyboardEvent(e,'zone de test'));
+$('#keyboardTestDisplay').addEventListener('keyup',e=>recordKeyboardEvent(e,'zone de test'));
+
 function dispatchToHatari(key,type){
  const d=frame.contentDocument;if(!d)return;
  const map={ArrowUp:38,ArrowDown:40,ArrowLeft:37,ArrowRight:39,ControlRight:17};
@@ -145,6 +202,8 @@ function handleHatariKey(e){
 }
 frame.addEventListener('load',()=>{try{
  const d=frame.contentDocument;
+ d.addEventListener('keydown',e=>recordKeyboardEvent(e,'écran Hatari'),true);
+ d.addEventListener('keyup',e=>recordKeyboardEvent(e,'écran Hatari'),true);
  d.addEventListener('keydown',handleHatariKey,true);
  d.addEventListener('keyup',handleHatariKey,true);
 }catch(e){status('Raccourci FIRE indisponible : '+e.message)}});

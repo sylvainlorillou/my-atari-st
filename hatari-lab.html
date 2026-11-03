@@ -15,7 +15,7 @@ body{margin:0;background:#d8d8d2;color:#252a28;font:14px Arial,sans-serif}
 .btn{border:1px solid #9da197;background:#fff;padding:9px 12px;border-radius:5px;font-weight:bold;font-size:11px;cursor:pointer}
 .primary{background:#244c9b;color:#fff;border-color:#244c9b}
 #status{font-size:12px;color:#526052;margin-top:8px;min-height:18px}
-.stage{background:#000;border:0;border-radius:12px;overflow:hidden;aspect-ratio:4/3;position:relative;width:100%}.stage:fullscreen{width:100vw;height:100vh;aspect-ratio:auto;border:0;border-radius:0;background:#000}
+.stage{background:#000;border:0;border-radius:12px;overflow:hidden;aspect-ratio:4/3;position:relative;width:100%}.stage:fullscreen{width:100vw;height:100vh;aspect-ratio:auto;border:0;border-radius:0;background:#000}.stage:fullscreen iframe{width:100%;height:100%}
 .stage iframe{display:block;width:100%;height:100%;min-height:0;border:0;background:#000}
 .hint{font-size:12px;line-height:1.55;color:#59625b}
 .small{font-size:10px;color:#72796f}
@@ -63,10 +63,11 @@ body{margin:0;background:#d8d8d2;color:#252a28;font:14px Arial,sans-serif}
  </section>
  <section class="panel">
   <h3>Commandes clavier — Mac</h3>
-  <p class="hint"><b>Déplacements :</b> flèches directionnelles.</p>
+  <p class="hint"><b>Joystick :</b> flèches directionnelles. Pour transmettre une flèche au clavier Atari plutôt qu’au joystick, maintiens <kbd>Maj</kbd> en même temps que la flèche (fonction native de Hatari).</p>
   <p class="hint"><b>Joystick FIRE :</b> touche <kbd>`</kbd> (accent grave). Maintenir pour tirer. La barre d'espace reste libre pour les jeux.</p>
   <p class="hint"><b>Touches de fonction :</b> <kbd>Fn + 1</kbd> à <kbd>Fn + 0</kbd> pour F1 à F10, si macOS transmet ces touches au navigateur. Le réglage des touches de fonction dans macOS peut modifier leur comportement.</p>
   <p class="control-note">Clique une fois dans l'écran Atari avant de jouer. Plus besoin des boutons virtuels.</p>
+  <p class="small">Le joystick clavier natif de Hatari utilise les quatre flèches. Maj + flèche permet de saisir une flèche Atari sans déplacer le joystick. Le réglage indépendant des touches nécessite une adaptation du moteur.</p>
  </section>
  <section class="panel">
   <p class="hint">Pour tester : démarre un jeu depuis la disquette, puis essaie la croix et FIRE. Clique dans l'écran Atari pour lui donner le focus si nécessaire.</p>
@@ -109,7 +110,8 @@ function bindDrive(drive){
 }
 bindDrive(0);bindDrive(1);
 $('#reset').onclick=()=>{const m=module();if(m&&m.ccall){m.ccall('Reset_Warm',null,[],[]);status('Reset demandé.')}else status('Moteur non prêt.')};
-$('#full').onclick=()=>{const m=module();if(m&&typeof m.requestFullscreen==='function'){try{m.requestFullscreen(false,false);return}catch(e){status('Plein écran Hatari indisponible : '+e.message)}}const s=$('#stage');if(s.requestFullscreen)s.requestFullscreen()};
+$('#full').onclick=()=>{const s=$('#stage');if(document.fullscreenElement){document.exitFullscreen();return}if(s.requestFullscreen){s.requestFullscreen().catch(e=>status('Plein écran indisponible : '+e.message))}else status('Le plein écran n’est pas pris en charge par ce navigateur.')};
+document.addEventListener('fullscreenchange',()=>{frame.style.width='100%';frame.style.height='100%';try{frame.contentWindow.dispatchEvent(new Event('resize'))}catch(e){};status(document.fullscreenElement?'Mode plein écran actif.':'Retour à l’affichage normal.')});
 function dispatchToHatari(key,type){
  const d=frame.contentDocument;if(!d)return;
  const map={ArrowUp:38,ArrowDown:40,ArrowLeft:37,ArrowRight:39,ControlRight:17};

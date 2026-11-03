@@ -93,8 +93,8 @@ jobs:
           open(p, 'w').write(s + '\n' + api)
           p = '/tmp/hatari/src/CMakeLists.txt'
           s = open(p).read()
-          old = \"'_Configuration_Apply','_IoMem_UnInit'\"
-          new = \"'_Configuration_Apply','_Browser_SetJoystickKeys','_IoMem_UnInit'\"
+          old = "'_Configuration_Apply','_IoMem_UnInit'"
+          new = "'_Configuration_Apply','_Browser_SetJoystickKeys','_IoMem_UnInit'"
           assert old in s, 'Could not locate exported function list'
           open(p, 'w').write(s.replace(old, new, 1))
           PY
@@ -102,8 +102,8 @@ jobs:
           python3 - <<'PY'
           p = '/tmp/hatari/src/CMakeLists.txt'
           s = open(p).read()
-          old = r'\"cwrap\"]'
-          new = r'\"cwrap\",\"FS\"]'
+          old = r'"cwrap"]'
+          new = r'"cwrap","FS"]'
           assert old in s, 'Could not locate Emscripten runtime exports'
           open(p, 'w').write(s.replace(old, new, 1))
           PY

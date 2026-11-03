@@ -59,6 +59,43 @@ jobs:
           assert old in s, 'Could not locate default hard-drive argument'
           open(p, 'w').write(s.replace(old, '', 1))
           PY
+          # Add a small browser API for configuring the keyboard joystick at runtime.
+          python3 - <<'PY'
+          p = '/tmp/hatari/src/joy.c'
+          s = open(p).read()
+          api = r'''
+          /* Browser bridge: key IDs 0=disabled, 1..4=cursor arrows, otherwise SDL ASCII keycode. */
+          static int Browser_JoyKey(int key)
+          {
+              switch (key) {
+              case 0: return SDLK_UNKNOWN;
+              case 1: return SDLK_UP;
+              case 2: return SDLK_DOWN;
+              case 3: return SDLK_LEFT;
+              case 4: return SDLK_RIGHT;
+              default: return (key >= 32 && key <= 126) ? key : SDLK_UNKNOWN;
+              }
+          }
+          void Browser_SetJoystickKeys(int enabled, int up, int down, int left, int right, int fire)
+          {
+              JOYSTICK *joy = &ConfigureParams.Joysticks.Joy[JOYID_JOYSTICK1];
+              joy->nJoystickMode = enabled ? JOYSTICK_KEYBOARD : JOYSTICK_DISABLED;
+              joy->nKeyCodeUp = Browser_JoyKey(up);
+              joy->nKeyCodeDown = Browser_JoyKey(down);
+              joy->nKeyCodeLeft = Browser_JoyKey(left);
+              joy->nKeyCodeRight = Browser_JoyKey(right);
+              joy->nKeyCodeFire = Browser_JoyKey(fire);
+          }
+          '''
+          assert 'Browser_SetJoystickKeys' not in s
+          open(p, 'w').write(s + '\\n' + api)
+          p = '/tmp/hatari/src/CMakeLists.txt'
+          s = open(p).read()
+          old = \"'_Configuration_Apply','_IoMem_UnInit'\"
+          new = \"'_Configuration_Apply','_Browser_SetJoystickKeys','_IoMem_UnInit'\"
+          assert old in s, 'Could not locate exported function list'
+          open(p, 'w').write(s.replace(old, new, 1))
+          PY
           # Expose the Emscripten virtual filesystem so the web UI can mount user disks.
           python3 - <<'PY'
           p = '/tmp/hatari/src/CMakeLists.txt'

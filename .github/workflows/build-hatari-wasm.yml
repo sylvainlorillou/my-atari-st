@@ -86,10 +86,11 @@ jobs:
               joy->nKeyCodeLeft = Browser_JoyKey(left);
               joy->nKeyCodeRight = Browser_JoyKey(right);
               joy->nKeyCodeFire = Browser_JoyKey(fire);
+              nJoyKeyEmu[JOYID_JOYSTICK1] = 0;
           }
           '''
           assert 'Browser_SetJoystickKeys' not in s
-          open(p, 'w').write(s + '\\n' + api)
+          open(p, 'w').write(s + '\n' + api)
           p = '/tmp/hatari/src/CMakeLists.txt'
           s = open(p).read()
           old = \"'_Configuration_Apply','_IoMem_UnInit'\"

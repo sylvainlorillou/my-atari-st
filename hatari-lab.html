@@ -136,7 +136,7 @@ function dispatchToHatari(key,type){
  try{Object.defineProperty(ev,'keyCode',{get:()=>code});Object.defineProperty(ev,'which',{get:()=>code})}catch(e){}
  d.dispatchEvent(ev);
 }
-function isFireKey(e){return e.code==='Backquote'||e.key==='\`'||e.key==='²'}
+function isFireKey(e){const s=joySettings();return s.enabled&&s.fire&&(e.code==='Backquote'||e.key==='\`'||e.key==='²')}
 function handleHatariKey(e){
  if(isFireKey(e)){
   e.preventDefault();e.stopImmediatePropagation();

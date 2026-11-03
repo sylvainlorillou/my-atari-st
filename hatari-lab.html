@@ -208,7 +208,7 @@ frame.addEventListener('load',()=>{try{
  d.addEventListener('keyup',handleHatariKey,true);
 }catch(e){status('Raccourci FIRE indisponible : '+e.message)}});
 document.addEventListener('keydown',e=>{
- if(e.target.closest('input,button,label,select,textarea'))return;
+ if(e.target.closest('input,button,label,select,textarea,#keyboardTester'))return;
  if(isFireKey(e)){e.preventDefault();dispatchToHatari('ControlRight','keydown');}
  else if(/^F([1-9]|10)$/.test(e.key)){e.preventDefault();dispatchToHatari(e.key,'keydown');}
 });

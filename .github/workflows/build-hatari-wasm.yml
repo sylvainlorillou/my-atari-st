@@ -107,8 +107,8 @@ jobs:
           python3 - <<'PY'
           p = '/tmp/hatari/src/CMakeLists.txt'
           s = open(p).read()
-          old = r'["ccall","cwrap"]'
-          new = r'["ccall","cwrap","FS"]'
+          old = r'\"cwrap\"]'
+          new = r'\"cwrap\",\"FS\"]'
           assert old in s, 'Could not locate Emscripten runtime exports'
           open(p, 'w').write(s.replace(old, new, 1))
           PY

@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MY ATARI ST — Prototype interface</title>
+<style>
+:root{--bg:#202326;--panel:#d8d7d0;--panel2:#c6c5bd;--ink:#25282a;--muted:#666a6b;--line:#aaa9a1;--dark:#101316;--cyan:#43b8d8;--green:#64a95a}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#46505a,#171a1d 65%);font:14px/1.4 system-ui,-apple-system,Segoe UI,sans-serif;color:#f3f3ef;min-height:100vh}
+button,select,input{font:inherit}button{cursor:pointer}
+.top{height:68px;display:flex;align-items:center;gap:26px;padding:0 24px;background:linear-gradient(#252a2e,#101316);border-bottom:1px solid #51575a;box-shadow:0 4px 15px #0008;position:sticky;top:0;z-index:10}
+.brand{font-size:22px;font-weight:850;letter-spacing:.04em;white-space:nowrap}.brand em{font-style:normal;color:#e8e6df}.brand small{color:#e5ad26;font-size:10px;display:block;letter-spacing:.18em}
+nav{display:flex;gap:6px;flex:1}nav button,.top-action{border:1px solid transparent;color:#d7d9d8;background:transparent;padding:10px 15px;border-radius:8px;font-weight:650}nav button.active{background:linear-gradient(#354b58,#24333d);border-color:#657782;box-shadow:inset 0 -2px #7dc9dd;color:#fff}nav button:hover,.top-action:hover{background:#ffffff12}
+.layout{max-width:1600px;margin:18px auto;padding:0 18px;display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:14px;align-items:start}
+main{min-width:0}.screen-wrap{padding:12px;border-radius:25px;background:linear-gradient(145deg,#f2f0e7,#8c8d89 45%,#d9d7ce);box-shadow:0 8px 25px #0008,inset 0 0 0 2px #ffffff9c}
+.screen{aspect-ratio:4/3;max-height: min(65vh,720px);width:100%;border-radius:18%/12%;background:radial-gradient(ellipse at center,#17212a,#080c11 72%);border:8px solid #353a3d;box-shadow:inset 0 0 35px #000,0 0 0 2px #777;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.screen:before{content:"";position:absolute;inset:10px;border-radius:18%/12%;border:2px solid #85877f55;pointer-events:none}.screen-content{text-align:center;color:#deded5;text-shadow:0 0 12px #a4c7d0}.atari-mark{font-size:clamp(52px,7vw,90px);font-weight:250;line-height:1}.screen-content h1{font-size:clamp(20px,3vw,34px);letter-spacing:.1em;margin:4px 0 16px}.screen-content p{font-size:12px;color:#aeb7b7;letter-spacing:.08em}
+.hardware{display:grid;grid-template-columns:1.25fr 1.25fr .85fr;gap:9px;margin-top:10px}
+.hw{background:linear-gradient(145deg,#e5e4dd,#c6c5bd);color:var(--ink);border:1px solid #9e9d95;border-radius:12px;padding:8px;box-shadow:inset 0 1px #fff,0 3px 9px #0005;min-width:0}
+.hw-title{display:flex;align-items:center;justify-content:space-between;font-weight:800;font-size:12px;margin-bottom:7px;color:#303335}.hw-title span:last-child{font-size:10px;color:#666;font-weight:550}
+.drives{display:grid;grid-template-columns:1fr 1fr;gap:6px}.drive{background:linear-gradient(#f1f0e9,#bdbcb4);border:1px solid #a5a49c;border-radius:7px;padding:6px;display:flex;align-items:center;gap:6px;min-width:0}.led{width:9px;height:9px;border-radius:50%;background:#777;box-shadow:inset 0 0 2px #333;flex:none}.led.on{background:#55a84c;box-shadow:0 0 7px #70d65d}.drive-body{min-width:0;flex:1}.drive strong{font-size:12px}.disk-slot{height:8px;background:linear-gradient(#303233,#070808);border:1px solid #777;border-radius:2px;margin:4px 0 2px;position:relative}.disk-slot:after{content:"";position:absolute;left:8%;right:8%;top:2px;height:2px;background:#777}.drive small{font-size:9px;color:#5d6060;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mini-btn{border:1px solid #999;border-radius:5px;background:#e8e7e0;color:#333;padding:3px 6px;font-size:10px}
+.joystick-row{display:grid;grid-template-columns:1fr 1fr;gap:6px}.joy{display:flex;align-items:center;gap:6px;background:linear-gradient(#e7e6df,#c2c1b9);border:1px solid #aaa99f;border-radius:7px;padding:5px;min-width:0}.joy svg{width:43px;height:43px;flex:none}.joy-info{min-width:0;font-size:10px;color:#424648}.joy-info b{display:block;font-size:11px}.status{font-size:9px;color:#4c6e48}.mouse-row{display:flex;align-items:center;gap:8px}.mouse-svg{width:40px;height:54px;flex:none}.mouse-choice{font-size:10px;color:#333;display:grid;gap:3px}.mouse-choice label{white-space:nowrap}
+.actionbar{display:flex;align-items:center;gap:8px;margin-top:10px;padding:8px;background:linear-gradient(#333a3f,#171b1e);border:1px solid #555c60;border-radius:10px;box-shadow:0 3px 9px #0005;flex-wrap:wrap}.actionbar button{padding:8px 13px;border-radius:7px;border:1px solid #6c7477;background:linear-gradient(#4b5459,#242a2e);color:#f6f5ef;font-weight:700}.actionbar .start{background:linear-gradient(#579b43,#276b28);border-color:#9bc28a}.ready{margin-left:auto;font-size:11px;color:#b7c5bb;display:flex;align-items:center;gap:6px}
+.sidebar{background:linear-gradient(150deg,#30363a,#171b1e);border:1px solid #697176;border-radius:12px;padding:10px;box-shadow:0 5px 16px #0007;position:sticky;top:82px;max-height:calc(100vh - 100px);display:flex;flex-direction:column;transition:transform .22s ease,opacity .22s ease}
+.side-head{display:flex;justify-content:space-between;align-items:center;padding:3px 2px 10px;font-weight:800}.side-head button{background:transparent;border:0;color:#ddd;font-size:19px}
+.search{width:100%;border:1px solid #8b9294;border-radius:7px;padding:8px 10px;background:#e7e6df;color:#25282a;margin-bottom:8px}
+.filters{display:flex;gap:5px;margin-bottom:8px}.filters button{background:#252b2f;color:#ddd;border:1px solid #646c70;border-radius:18px;padding:5px 9px;font-size:10px}.filters button.active{background:#d8d7d0;color:#25282a}
+.game-list{overflow:auto;min-height:130px}.game{width:100%;text-align:left;display:flex;align-items:center;gap:9px;background:transparent;border:1px solid transparent;border-bottom-color:#ffffff20;color:#f0f0eb;padding:8px 5px;border-radius:6px}.game.active{background:#46545a;border-color:#83959c}.spine{width:22px;height:42px;border-radius:3px;flex:none;box-shadow:inset 2px 0 #ffffff45,inset -2px 0 #0003}.game b{font-size:12px;display:block}.game small{font-size:10px;color:#b7c0c1;display:block}.side-foot{padding-top:9px;border-top:1px solid #ffffff30;margin-top:8px}.insert-target{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px}.insert-target button{background:#d8d7d0;border:1px solid #aaa;color:#25282a;padding:6px 9px;border-radius:6px;font-weight:700}
+.hide-side .layout{grid-template-columns:minmax(0,1fr)}.hide-side .sidebar{display:none}
+.page{display:none}.page.active{display:block;animation:fade .15s ease}@keyframes fade{from{opacity:.6;transform:translateY(3px)}to{opacity:1;transform:none}}
+.section-card{background:linear-gradient(145deg,#e4e3dc,#c8c7bf);color:#282b2c;border:1px solid #a6a59d;border-radius:12px;padding:14px;margin-bottom:10px}.section-card h2{font-size:16px;margin:0 0 10px}.section-card p{font-size:12px;color:#56595a}.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.setting-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px;border-top:1px solid #aaa9a1;font-size:12px}.setting-row select,.setting-row input{max-width:180px;padding:5px;border:1px solid #aaa;border-radius:5px;background:#f1f0ea;color:#222}
+.library-toggle{position:fixed;right:16px;bottom:18px;z-index:20;background:#d8d7d0;color:#25282a;border:1px solid #999;border-radius:24px;padding:10px 14px;box-shadow:0 4px 14px #0007;display:none}
+.notice{font-size:11px;color:#aeb7b8;margin:8px 2px}
+@media(max-width:1000px){.layout{grid-template-columns:minmax(0,1fr) 260px}.hardware{grid-template-columns:1fr 1fr}.hw.mouse-panel{grid-column:1/-1}.mouse-row{justify-content:flex-start}}
+@media(max-width:760px){.top{height:auto;min-height:60px;padding:8px 12px;gap:8px;flex-wrap:wrap}.brand{font-size:17px}nav{order:2;flex-basis:100%;overflow:auto}nav button{padding:8px 10px;font-size:11px}.layout{display:block;padding:0 9px;margin:10px auto}.sidebar{position:fixed;z-index:15;top:110px;right:9px;bottom:9px;width:min(340px,calc(100vw - 18px));max-height:none;transform:translateX(calc(100% + 20px));opacity:0;pointer-events:none}.sidebar.open{transform:translateX(0);opacity:1;pointer-events:auto}.screen-wrap{padding:7px;border-radius:14px}.screen{border-width:5px;aspect-ratio:4/3}.hardware{grid-template-columns:1fr 1fr}.hw.mouse-panel{grid-column:1/-1}.actionbar button{font-size:11px;padding:7px 9px}.ready{margin-left:0}.library-toggle{display:block}}
+@media(max-width:460px){.hardware{grid-template-columns:1fr}.hw.mouse-panel{grid-column:auto}.joy svg{width:38px;height:38px}.brand small{display:none}.screen-content p{font-size:9px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+ <div class="brand"><em>〽 MY ATARI ST</em><small>THE 16-BIT EXPERIENCE</small></div>
+ <nav aria-label="Navigation principale">
+  <button class="active" data-tab="console">▣ Console</button><button data-tab="disks">▤ Disquettes</button><button data-tab="controls">◈ Contrôles</button><button data-tab="profiles">▱ Profils</button><button data-tab="options">⚙ Options</button>
+ </nav>
+ <button class="top-action" id="sideToggle" title="Afficher/masquer la bibliothèque">☷</button>
+</header>
+<div class="layout" id="layout">
+<main>
+ <section class="page active" id="page-console">
+  <div class="screen-wrap"><div class="screen"><div class="screen-content"><div class="atari-mark">♜</div><h1>ATARI ST</h1><p>1 Mo RAM　|　TOS 1.04　|　HATARI WASM</p></div></div></div>
+  <div class="hardware">
+   <section class="hw"><div class="hw-title">▣ Lecteurs de disquette <span>A / B</span></div><div class="drives">
+    <div class="drive"><i class="led on" id="ledA"></i><div class="drive-body"><strong>A:</strong><div class="disk-slot"></div><small id="diskA">Vroom (1991)</small></div><button class="mini-btn" data-eject="A">⏏</button></div>
+    <div class="drive"><i class="led" id="ledB"></i><div class="drive-body"><strong>B:</strong><div class="disk-slot"></div><small id="diskB">Vide</small></div><button class="mini-btn" data-eject="B">⏏</button></div>
+   </div></section>
+   <section class="hw"><div class="hw-title">◈ Joysticks <span>2 ports</span></div><div class="joystick-row">
+    <div class="joy"><svg viewBox="0 0 100 100" aria-label="Joystick noir et jaune"><rect x="9" y="54" width="82" height="38" rx="13" fill="#252729" stroke="#626568" stroke-width="3"/><path d="M43 61L47 28Q50 16 57 27L64 62" fill="#151719" stroke="#5b5f60" stroke-width="3"/><circle cx="53" cy="20" r="10" fill="#17191a" stroke="#666" stroke-width="2"/><rect x="17" y="61" width="19" height="13" rx="3" fill="#e5c52b"/><rect x="66" y="65" width="17" height="12" rx="3" fill="#e5c52b"/></svg><div class="joy-info"><b>J1 <span class="status">● ACTIF</span></b>Flèches · FIRE `</div></div>
+    <div class="joy"><svg viewBox="0 0 100 100" aria-label="Joystick noir et rouge"><rect x="9" y="54" width="82" height="38" rx="13" fill="#252729" stroke="#626568" stroke-width="3"/><path d="M43 61L39 30Q38 17 54 16Q69 19 65 37L62 63" fill="#17191a" stroke="#5b5f60" stroke-width="3"/><path d="M40 21Q52 10 66 23L65 34L42 34Z" fill="#b83b36"/><circle cx="25" cy="72" r="7" fill="#b83b36"/><circle cx="76" cy="72" r="7" fill="#b83b36"/></svg><div class="joy-info"><b>J2 <span class="status">● OFF</span></b>IJKL · FIRE =</div></div>
+   </div></section>
+   <section class="hw mouse-panel"><div class="hw-title">⌁ Souris <span>Atari</span></div><div class="mouse-row"><svg class="mouse-svg" viewBox="0 0 80 110" aria-label="Souris Atari grise"><path d="M40 5C18 5 12 21 12 43V80Q12 102 40 105Q68 102 68 80V43C68 21 62 5 40 5Z" fill="#aaa99f" stroke="#66675f" stroke-width="3"/><path d="M40 7V35" stroke="#66675f" stroke-width="2"/><rect x="18" y="13" width="20" height="23" rx="4" fill="#c7c6bd" stroke="#777"/><rect x="42" y="13" width="20" height="23" rx="4" fill="#c7c6bd" stroke="#777"/><path d="M40 80v10" stroke="#73746e" stroke-width="2"/><text x="40" y="73" text-anchor="middle" font-size="10" fill="#777">A</text></svg><div class="mouse-choice"><label><input type="radio" name="mouse" checked> Trackpad (Mac)</label><label><input type="radio" name="mouse"> Souris externe</label></div></div></section>
+  </div>
+  <div class="actionbar"><button class="start" id="start">▶ Démarrer</button><button id="pause">Ⅱ Pause</button><button id="reset">↻ Reset</button><button id="fullscreen">⛶ Plein écran</button><span class="ready"><i class="led on"></i> Prototype visuel — émulateur non connecté</span></div>
+ </section>
+ <section class="page" id="page-disks"><div class="section-card"><h2>Bibliothèque de disquettes</h2><p>Choisis un jeu dans la bibliothèque latérale, puis insère-le dans le lecteur A ou B. La boîte verticale de disquettes sera replacée ici dans sa version V9 validée.</p><button id="openLibrary">Ouvrir la bibliothèque →</button></div></section>
+ <section class="page" id="page-controls"><div class="section-card"><h2>Contrôles</h2><div class="settings-grid">
+  <div><h3>Joystick 1 — noir / jaune</h3><p>Flèches directionnelles · FIRE = `</p><label><input type="checkbox" checked> Activer le joystick 1</label><p>Directions et FIRE activables individuellement dans les réglages détaillés.</p></div>
+  <div><h3>Joystick 2 — noir / rouge</h3><p>IJKL · FIRE = =</p><label><input type="checkbox"> Activer le joystick 2</label><p>Les touches en conflit avec le Port 1 seront refusées.</p></div>
+ </div><div class="setting-row"><b>Souris</b><select><option>Trackpad (Mac)</option><option>Souris externe</option></select></div><p>Prototype d'organisation : les réglages fins seront raccordés aux commandes Hatari dans une phase ultérieure.</p></div></section>
+ <section class="page" id="page-profiles"><div class="section-card"><h2>Profils</h2><p>Sélectionne un profil de périphériques. Le changement de profil ne modifie pas les disquettes montées.</p><div class="settings-grid"><button class="profile" data-profile="Jeux">🎮 Jeux</button><button class="profile" data-profile="Productivité">⌨ Productivité</button><button class="profile" data-profile="Personnel">⚙ Personnel</button></div><p id="profileStatus">Profil actif : Jeux</p><button id="saveProfile">Enregistrer le profil</button></div><div class="section-card"><h2>Dernière session</h2><p id="sessionStatus">Aucune session sauvegardée dans ce prototype.</p><button id="restoreSession">Restaurer la dernière session</button></div></section>
+ <section class="page" id="page-options"><div class="section-card"><h2>Options d'interface</h2><div class="setting-row">Animations <input type="checkbox" id="animations" checked></div><div class="setting-row">Bibliothèque ouverte au démarrage <input type="checkbox" id="libraryStart"></div><div class="setting-row">Densité de l'interface <select><option>Compacte</option><option>Confortable</option></select></div><p>Les préférences de ce prototype sont locales à ce navigateur.</p></div></section>
+</main>
+<aside class="sidebar" id="sidebar"><div class="side-head"><span>▤ Bibliothèque</span><button id="closeSide" aria-label="Fermer">×</button></div><input class="search" id="search" placeholder="Rechercher un jeu…"><div class="filters"><button class="active">Tous</button><button>Jeux</button><button>Favoris</button></div><div class="game-list" id="gameList">
+ <button class="game active" data-game="Vroom (1991)"><span class="spine" style="background:#00b7c7"></span><span><b>Vroom</b><small>1991 · Lankhor</small></span></button>
+ <button class="game" data-game="Obsession (Disk 1 & 2)"><span class="spine" style="background:#51a95e"></span><span><b>Obsession</b><small>1994 · 2 disquettes</small></span></button>
+ <button class="game" data-game="The Addams Family"><span class="spine" style="background:#577bc1"></span><span><b>The Addams Family</b><small>1992 · Ocean</small></span></button>
+ <button class="game" data-game="Star Wars — Return of the Jedi"><span class="spine" style="background:#d98b38"></span><span><b>Star Wars — Jedi</b><small>1987 · Lucasfilm</small></span></button>
+ <button class="game" data-game="Speedball 2"><span class="spine" style="background:#9c67bd"></span><span><b>Speedball 2</b><small>1990 · Image Works</small></span></button>
+ </div><div class="side-foot"><div class="insert-target"><span>Insérer la sélection dans :</span><button id="insertA">Lecteur A</button><button id="insertB">Lecteur B</button></div><p class="notice">Démo d'interface : aucune image disque n'est réellement montée.</p></div></aside>
+</div>
+<button class="library-toggle" id="mobileLibrary">▤ Bibliothèque</button>
+<script>
+const $=s=>document.querySelector(s);let selected="Vroom (1991)",profile="Jeux";
+function showTab(name){document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.tab===name));document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id==="page-"+name));if(name==="disks")openSide(true)}
+document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.tab)));
+function openSide(force){const side=$("#sidebar");if(innerWidth<=760)side.classList.toggle("open",force??!side.classList.contains("open"));else document.body.classList.toggle("hide-side",force===false?!document.body.classList.contains("hide-side"):false)}
+$("#sideToggle").onclick=()=>{if(innerWidth<=760)openSide();else document.body.classList.toggle("hide-side")};
+$("#mobileLibrary").onclick=()=>openSide();$("#closeSide").onclick=()=>{if(innerWidth<=760)$("#sidebar").classList.remove("open");else document.body.classList.add("hide-side")};
+$("#openLibrary").onclick=()=>{showTab("console");if(innerWidth<=760)openSide(true);else document.body.classList.remove("hide-side")};
+document.querySelectorAll(".game").forEach(b=>b.onclick=()=>{document.querySelectorAll(".game").forEach(x=>x.classList.remove("active"));b.classList.add("active");selected=b.dataset.game});
+$("#search").oninput=e=>document.querySelectorAll(".game").forEach(b=>b.hidden=!b.dataset.game.toLowerCase().includes(e.target.value.toLowerCase()));
+function insert(d){$("#disk"+d).textContent=selected;$("#led"+d).classList.add("on");}
+$("#insertA").onclick=()=>insert("A");$("#insertB").onclick=()=>insert("B");
+document.querySelectorAll("[data-eject]").forEach(b=>b.onclick=()=>{$("#disk"+b.dataset.eject).textContent="Vide";$("#led"+b.dataset.eject).classList.remove("on")});
+$("#start").onclick=()=>alert("Prototype visuel : la commande sera reliée à Hatari lors de l'intégration.");$("#pause").onclick=()=>alert("Prototype visuel : pause non connectée.");$("#reset").onclick=()=>alert("Prototype visuel : reset non connecté.");$("#fullscreen").onclick=()=>document.querySelector(".screen-wrap").requestFullscreen?.();
+document.querySelectorAll(".profile").forEach(b=>b.onclick=()=>{profile=b.dataset.profile;$("#profileStatus").textContent="Profil actif : "+profile;localStorage.setItem("myAtariPrototypeProfile",profile)});
+$("#saveProfile").onclick=()=>{localStorage.setItem("myAtariPrototypeProfile",profile);alert("Profil "+profile+" enregistré dans ce navigateur.")};
+$("#restoreSession").onclick=()=>{const s=JSON.parse(localStorage.getItem("myAtariPrototypeSession")||"null");if(!s){alert("Aucune session sauvegardée.");return}$("#diskA").textContent=s.a;$("#diskB").textContent=s.b;profile=s.profile;$("#profileStatus").textContent="Profil actif : "+profile;alert("Préférences de la session restaurées (simulation).")};
+window.addEventListener("beforeunload",()=>localStorage.setItem("myAtariPrototypeSession",JSON.stringify({a:$("#diskA").textContent,b:$("#diskB").textContent,profile})));
+$("#animations").onchange=e=>document.documentElement.style.setProperty("--motion",e.target.checked?"1":"0");
+</script>
+</body></html>

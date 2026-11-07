@@ -34,7 +34,7 @@ main{min-width:0}.screen-wrap{padding:12px;border-radius:25px;max-width:720px;wi
 .side-head{display:flex;justify-content:space-between;align-items:center;padding:3px 2px 10px;font-weight:800}.v9-tag{font-size:10px;padding:3px 6px;background:#d8d7d0;color:#24282a;border-radius:4px;margin-left:5px}.side-head button{background:transparent;border:0;color:#ddd;font-size:19px}
 .search{width:100%;border:1px solid #8b9294;border-radius:7px;padding:8px 10px;background:#e7e6df;color:#25282a;margin-bottom:8px}
 .filters{display:flex;gap:5px;margin-bottom:8px;flex-wrap:wrap}.filters button{background:#252b2f;color:#ddd;border:1px solid #646c70;border-radius:18px;padding:5px 9px;font-size:10px}.filters button.active{background:#d8d7d0;color:#25282a}
-.floppy-box{height:calc(308px + 32px * var(--game-count, 5));max-height:none;min-height:0;position:relative;padding:14px 10px 76px;background:linear-gradient(145deg,#41494b,#292f31 48%,#3d4547);border:2px solid #697274;border-radius:18px 18px 8px 8px;box-shadow:inset 0 0 0 3px #202628,0 8px 16px #0008;overflow:hidden}
+.floppy-box{height:calc(308px + 32px * var(--game-count, 5));max-height:none;min-height:0;flex:0 0 auto;position:relative;padding:14px 10px 76px;background:linear-gradient(145deg,#41494b,#292f31 48%,#3d4547);border:2px solid #697274;border-radius:18px 18px 8px 8px;box-shadow:inset 0 0 0 3px #202628,0 8px 16px #0008;overflow:hidden}
 .game-list{overflow:visible;height:auto;min-height:0;flex:0 0 auto;padding:8px 6px 16px;background:linear-gradient(90deg,#22292b,#3c4446 12%,#30383a 88%,#202628);border:1px solid #596264;border-radius:9px;box-shadow:inset 0 3px 12px #0009;display:flex;flex-direction:column;gap:5px}
 .game{--accent:#00d4e5;width:220px;min-height:27px;flex:0 0 27px;margin:0;padding:0 5px;align-self:center;position:relative;display:flex;align-items:flex-start;text-align:left;color:#fff;background:linear-gradient(#171c1e,#080b0c);border:1px solid #090d0e;border-radius:9px;box-shadow:0 3px 0 #080a0b,0 5px 8px #0009;overflow:visible;transition:flex-basis .24s ease,height .24s ease,margin .24s ease;z-index:1}
 .game.active{z-index:2}
@@ -117,32 +117,17 @@ main{min-width:0}.screen-wrap{padding:12px;border-radius:25px;max-width:720px;wi
 const $=s=>document.querySelector(s);let selected="Vroom (1991)",profile="Jeux";
 function updateFloppyBoxHeight(){
  const box=document.querySelector(".floppy-box");
- const list=document.querySelector("#gameList");
- if(!box||!list)return;
- const games=[...list.querySelectorAll(".game")];
- const boxStyle=getComputedStyle(box);
- const listStyle=getComputedStyle(list);
- const front=box.querySelector(".box-front");
- const px=(v)=>parseFloat(v)||0;
- const gameHeight=games.reduce((sum,game)=>{
-   const style=getComputedStyle(game);
-   return sum+px(style.flexBasis);
- },0);
- const gap=px(listStyle.rowGap||listStyle.gap);
- const listChrome=px(listStyle.paddingTop)+px(listStyle.paddingBottom)+px(listStyle.borderTopWidth)+px(listStyle.borderBottomWidth);
- const boxChrome=px(boxStyle.paddingTop)+px(boxStyle.paddingBottom)+px(boxStyle.borderTopWidth)+px(boxStyle.borderBottomWidth);
- const frontHeight=front?front.getBoundingClientRect().height:0;
- const expandedExtra=220-27;
- const safetyGap=18;
- const requiredHeight=gameHeight+Math.max(0,games.length-1)*gap+listChrome+boxChrome+frontHeight+expandedExtra+safetyGap;
- box.style.height=Math.ceil(requiredHeight)+"px";
+ const games=document.querySelectorAll("#gameList .game").length;
+ if(!box)return;
+ // Exact border-box height: 27N + 5(N-1) + 26px list chrome
+ // + 193px expanded-disk reserve + 94px box padding/borders.
+ const requiredHeight=308+32*games;
+ box.style.height=requiredHeight+"px";
+ box.style.flex="0 0 "+requiredHeight+"px";
 }
 updateFloppyBoxHeight();
 const gameList=document.querySelector("#gameList");
-if(gameList){
- new MutationObserver(updateFloppyBoxHeight).observe(gameList,{childList:true});
- window.addEventListener("resize",updateFloppyBoxHeight);
-}
+if(gameList)new MutationObserver(updateFloppyBoxHeight).observe(gameList,{childList:true});
 function showTab(name){document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.tab===name));document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id==="page-"+name));if(name==="disks")openSide(true)}
 document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.tab)));
 function openSide(force){const side=$("#sidebar");if(innerWidth<=760)side.classList.toggle("open",force??!side.classList.contains("open"));else document.body.classList.toggle("hide-side",force===false?!document.body.classList.contains("hide-side"):false)}

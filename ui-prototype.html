@@ -117,13 +117,32 @@ main{min-width:0}.screen-wrap{padding:12px;border-radius:25px;max-width:720px;wi
 const $=s=>document.querySelector(s);let selected="Vroom (1991)",profile="Jeux";
 function updateFloppyBoxHeight(){
  const box=document.querySelector(".floppy-box");
- const games=document.querySelectorAll("#gameList .game").length;
- if(box) box.style.height=(308+32*games)+"px";
+ const list=document.querySelector("#gameList");
+ if(!box||!list)return;
+ const games=[...list.querySelectorAll(".game")];
+ const boxStyle=getComputedStyle(box);
+ const listStyle=getComputedStyle(list);
+ const front=box.querySelector(".box-front");
+ const px=(v)=>parseFloat(v)||0;
+ const gameHeight=games.reduce((sum,game)=>{
+   const style=getComputedStyle(game);
+   return sum+px(style.flexBasis);
+ },0);
+ const gap=px(listStyle.rowGap||listStyle.gap);
+ const listChrome=px(listStyle.paddingTop)+px(listStyle.paddingBottom)+px(listStyle.borderTopWidth)+px(listStyle.borderBottomWidth);
+ const boxChrome=px(boxStyle.paddingTop)+px(boxStyle.paddingBottom)+px(boxStyle.borderTopWidth)+px(boxStyle.borderBottomWidth);
+ const frontHeight=front?front.getBoundingClientRect().height:0;
+ const expandedExtra=220-27;
+ const safetyGap=18;
+ const requiredHeight=gameHeight+Math.max(0,games.length-1)*gap+listChrome+boxChrome+frontHeight+expandedExtra+safetyGap;
+ box.style.height=Math.ceil(requiredHeight)+"px";
 }
 updateFloppyBoxHeight();
 const gameList=document.querySelector("#gameList");
-if(gameList)new MutationObserver(updateFloppyBoxHeight).observe(gameList,{childList:true});
-
+if(gameList){
+ new MutationObserver(updateFloppyBoxHeight).observe(gameList,{childList:true});
+ window.addEventListener("resize",updateFloppyBoxHeight);
+}
 function showTab(name){document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.tab===name));document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id==="page-"+name));if(name==="disks")openSide(true)}
 document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.tab)));
 function openSide(force){const side=$("#sidebar");if(innerWidth<=760)side.classList.toggle("open",force??!side.classList.contains("open"));else document.body.classList.toggle("hide-side",force===false?!document.body.classList.contains("hide-side"):false)}

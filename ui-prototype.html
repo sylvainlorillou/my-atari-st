@@ -63,7 +63,7 @@ main{min-width:0}.screen-wrap{padding:12px;border-radius:25px;max-width:720px;wi
 .notice{font-size:11px;color:#aeb7b8;margin:8px 2px}
 
 /* Matériel Atari : illustrations de référence validées — ne pas redessiner en CSS */
-.monitor-stage{position:relative;width:100%;max-width:720px;margin:0 auto;background:transparent;border-radius:0;overflow:visible;box-shadow:none}
+.monitor-stage{position:relative;width:100%;max-width:850px;margin:0 auto;background:transparent;border-radius:0;overflow:visible;box-shadow:none}
 .monitor-reference{display:block;width:100%;height:auto}
 .monitor-content{position:absolute;left:19.7%;top:20%;width:59.6%;height:57%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#d8e1d9;text-shadow:0 0 10px #9bb5a0;pointer-events:none}
 .monitor-content .atari-mark{font-size:clamp(24px,4vw,54px);line-height:1}
@@ -72,12 +72,12 @@ main{min-width:0}.screen-wrap{padding:12px;border-radius:25px;max-width:720px;wi
 .keyboard-reference{width:100%;max-width:720px;margin:8px auto 10px;background:transparent;border-radius:0;overflow:visible;box-shadow:none}
 .keyboard-reference img{display:block;width:100%;height:auto}
 .drives-panel .drives{display:grid;grid-template-columns:1fr;gap:8px}
-.drives-panel .drive{display:flex;flex-direction:column;align-items:stretch;gap:3px;padding:4px;background:#fff;border:1px solid #aaa99f;border-radius:7px}
-.drive-reference{display:block;width:100%;max-width:270px;height:auto;object-fit:contain;align-self:center}
+.drives-panel .drive{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:3px;background:#fff;border:1px solid #aaa99f;border-radius:7px}
+.drive-reference{display:block;width:100%;max-width:150px;height:auto;object-fit:contain;align-self:center}
 .drive-status{display:flex;align-items:center;gap:7px;padding:2px 5px;color:#303335}
 .drive-status strong{font-size:12px}.drive-status small{min-width:0;flex:1;font-size:10px;color:#555;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .drive-status .led{width:8px;height:8px}
-@media(max-width:760px){.monitor-stage{border-radius:18px}.monitor-content h1{margin:2px 0 4px}.monitor-content p{font-size:6px}.keyboard-reference{width:100%;max-width:720px;margin:8px auto 8px}.drive-reference{max-width:270px}.drive-status{gap:5px}.drive-status .mini-btn{font-size:9px;padding:3px 5px}}
+@media(max-width:760px){.monitor-stage{border-radius:18px}.monitor-content h1{margin:2px 0 4px}.monitor-content p{font-size:6px}.keyboard-reference{width:100%;max-width:720px;margin:8px auto 8px}.drive-reference{max-width:150px}.drive-status{gap:5px}.drive-status .mini-btn{font-size:9px;padding:3px 5px}}
 @media(max-width:1000px){.layout{grid-template-columns:minmax(0,1fr) 260px}.hardware{grid-template-columns:minmax(170px,.7fr) minmax(0,1.3fr)}.controls-panel .joy svg{width:35px;height:35px}.joy-info{font-size:9px}}
 @media(max-width:1100px){.layout{display:block;padding:0 12px}.sidebar{position:relative;top:auto;right:auto;width:100%;max-width:420px;margin:14px auto 0;max-height:none;transform:none;opacity:1;pointer-events:auto}}
 @media(max-width:760px){.floppy-box{height:calc(308px + 32px * var(--game-count, 5));max-height:none}.atari-era{width:88%;max-width:560px;margin-top:14px}.top{height:auto;min-height:60px;padding:8px 12px;gap:8px;flex-wrap:wrap}.top-transport{order:3;flex-basis:100%;justify-content:center}.top-transport button{flex:1;padding:7px 5px;font-size:10px}.brand{font-size:17px}nav{order:2;flex-basis:100%;overflow:auto}nav button{padding:8px 10px;font-size:11px}.layout{display:block;padding:0 9px;margin:10px auto}.sidebar{position:fixed;z-index:15;top:110px;right:9px;bottom:9px;width:min(340px,calc(100vw - 18px));max-height:none;transform:translateX(calc(100% + 20px));opacity:0;pointer-events:none}.sidebar.open{transform:translateX(0);opacity:1;pointer-events:auto}.screen-wrap{padding:8px;border-radius:25px;max-width:min(100%,720px)}.screen{border-width:7px;aspect-ratio:16/10}.hardware{grid-template-columns:1fr}.drives-panel .drive{padding:5px}.controls-panel .joystick-row{grid-template-columns:1fr 1fr}.controls-panel .joy{padding:4px}.controls-panel .joy svg{width:29px;height:29px}.mouse-inline .mouse-choice{display:grid;gap:2px}.actionbar button{font-size:11px;padding:7px 9px}.ready{margin-left:0}.library-toggle{display:block}}

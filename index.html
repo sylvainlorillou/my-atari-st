@@ -74,7 +74,7 @@ dialog::backdrop{background:#101612b8}
 <section class="machine">
  <div class="monitor">
   <div class="bezel"><div class="screen" id="displayScreen">
-   <div id="emuHost"><iframe id="emuFrame" title="NeoST Atari emulator" allow="pointer-lock; fullscreen" src="neost/index.html?machine=ste&mem=1m"></iframe></div>
+   <div id="emuHost"><iframe id="emuFrame" title="Hatari Atari ST emulator" allow="pointer-lock; fullscreen" src="hatari/hatari.html"></iframe></div>
    <div id="fakeDesktop"><div class="menu"><b>MY ATARI</b><span>Fichier</span><span>Disque</span><span>Options</span></div>
    <div class="icons"><span><b>▤</b>Disquette A</span><span><b>▧</b>Disque dur</span><span><b>▣</b>Corbeille</span></div>
    <div class="gem"><strong>MY ATARI ST</strong>Bienvenue sur votre 1040 STE<br>Choisissez une disquette dans votre collection<br><button id="screenOk">OK</button></div>
@@ -117,29 +117,42 @@ function render(){
  document.querySelectorAll('[data-id]').forEach(el=>el.onclick=()=>select(el.dataset.id));
  let e=$('#emptyAdd');if(e)e.onclick=openDlg;
 }
-let emuReady=false,emuJoy=false,emuSound=true,pendingGame=null;
+let emuReady=false,emuJoy=false,emuSound=true,emuPaused=false,pendingGame=null,mountedDiskPath=null;
 function emulatorFrame(){return document.getElementById('emuFrame')}
-function emulatorDoc(){try{return emulatorFrame().contentWindow.document}catch(e){return null}}
+function hatariModule(){try{return emulatorFrame().contentWindow.Module||null}catch(e){return null}}
 function emulatorStatus(t){$('#emuStatus').textContent=t}
-function mountGameInEmulator(g){
- const f=emulatorFrame();
+function applyHatariJoystick(){
+ const m=hatariModule();if(!m||!m.calledRun||!m.ccall)return false;
+ try{m.ccall('Browser_SetJoystickKeys',null,['number','number','number','number','number','number','number'],[1,emuJoy?1:0,emuJoy?1:0,emuJoy?2:0,emuJoy?3:0,emuJoy?4:0,emuJoy?5:0]);return true}
+ catch(e){emulatorStatus('Réglage joystick indisponible : '+e.message);return false}
+}
+function waitForHatari(){
+ const m=hatariModule();
+ if(m&&m.calledRun&&m.FS&&m.ccall){
+  emuReady=true;applyHatariJoystick();
+  emulatorStatus('Hatari WebAssembly prêt — clique dans l’écran pour capturer la souris.');
+  if(pendingGame){const g=pendingGame;pendingGame=null;mountGameInEmulator(g)}
+  return;
+ }
+ setTimeout(waitForHatari,500);
+}
+emulatorFrame().addEventListener('load',()=>{emuReady=false;emulatorStatus('Chargement de Hatari WebAssembly…');waitForHatari()});
+async function mountGameInEmulator(g){
+ const f=emulatorFrame(),m=hatariModule();
  $('#fakeDesktop').style.display='none';$('#emuHost').classList.add('active');$('#displayScreen').classList.add('emulating');
+ if(!emuReady||!m||!m.FS||!m.ccall){pendingGame=g;emulatorStatus('Démarrage de Hatari… La disquette sera montée dès que le moteur sera prêt.');return}
+ if(!(g.blob instanceof Blob)){emulatorStatus('Cette image disque locale ne peut pas être lue.');return}
  try{
-  const w=f.contentWindow;
-  if(!emuReady||!w||!w.Module||!w.Module.FS||!w.Module.FS.writeFile||!w.neostMountLocalPath){
-   pendingGame=g;emulatorStatus('Démarrage de NeoST… La disquette sera montée dès que le moteur sera prêt.');return;
-  }
-  const bytes=g.blob instanceof Blob?g.blob:null;
-  if(!bytes){emulatorStatus('Cette image disque ne peut pas être lue.');return}
-  bytes.arrayBuffer().then(buf=>{
-   const ext=(g.ext||'st').toLowerCase().replace(/[^a-z0-9]/g,'');
-   const path='/disks/my-atari-'+Date.now()+'.'+ext;
-   w.Module.FS.writeFile(path,new Uint8Array(buf));
-   if(w.neostMountLocalPath){w.neostMountLocalPath(path,g.fileName)}
-   else{emulatorStatus('La version embarquée du moteur ne permet pas encore le montage direct.');return}
-   emulatorStatus('Disquette envoyée au lecteur A : '+g.name);
-  }).catch(e=>emulatorStatus('Erreur de lecture : '+e.message));
- }catch(e){emulatorStatus('Le moteur est en cours de chargement. Réessaie dans un instant.')}
+  const bytes=new Uint8Array(await g.blob.arrayBuffer()),ext=(g.ext||'st').toLowerCase().replace(/[^a-z0-9]/g,''),path='/tmp/my-atari-'+Date.now()+'.'+ext;
+  m.FS.writeFile(path,bytes);
+  const assigned=m.ccall('Floppy_SetDiskFileName','string',['number','string','string'],[0,path,null]);
+  if(!assigned)throw new Error('Hatari refuse cette image disque.');
+  const inserted=m.ccall('Floppy_InsertDiskIntoDrive','number',['number'],[0]);
+  if(!inserted)throw new Error('Insertion refusée. Vérifie le format de cette image.');
+  mountedDiskPath=path;
+  if(emuPaused&&m.resumeMainLoop){m.resumeMainLoop();emuPaused=false}
+  emulatorStatus('Disquette insérée dans le lecteur A : '+g.name+' — clique dans l’écran pour jouer.');
+ }catch(e){emulatorStatus('Erreur de montage dans Hatari : '+e.message)}
 }
 function select(id){chosen=id;let g=games.find(x=>x.id===id);$('#info').hidden=false;$('#name').textContent=g.name;$('#meta').textContent=g.fileName+' · '+Math.round(g.size/1024)+' Ko';$('#play').dataset.gameId=g.id;render()}
 document.addEventListener('click',e=>{const b=e.target.closest('#play');if(!b)return;const g=games.find(x=>x.id===b.dataset.gameId);if(!g){emulatorStatus('Aucune disquette sélectionnée.');return}emulatorStatus('Clic JOUER détecté — ouverture de l’émulateur…');mountGameInEmulator(g)});
@@ -152,11 +165,10 @@ $('#file').onchange=e=>{let f=e.target.files[0];if(f&&!$('#title').value)$('#tit
 $('#save').onclick=async()=>{let f=$('#file').files[0],n=$('#title').value.trim()||(f&&f.name.replace(/\.[^.]+$/,''));if(!f){alert('Sélectionnez une image disque.');return}if(f.size>25*1024*1024){alert('25 Mo maximum pour ce prototype.');return}
  let g={id:crypto.randomUUID(),name:n,fileName:f.name,size:f.size,ext:f.name.split('.').pop(),blob:f,added:Date.now()};
  await write(g);games=await all();chosen=g.id;$('#dlg').close();$('#title').value='';$('#file').value='';render();select(g.id)};
-window.addEventListener('message',e=>{if(e.origin!==location.origin)return;if(e.data?.type==='neost-focus'){try{emulatorFrame().focus({preventScroll:true})}catch(_){emulatorFrame().focus()}return}if(e.data?.type==='neost-pointer-status'){emulatorStatus(e.data.message);return}if(e.data?.type!=='neost-ready')return;emuReady=true;emulatorStatus('Émulateur prêt — double-clique dans l’écran pour capturer la souris. Clique dans l’écran puis utilise le clavier Mac pour saisir.');if(pendingGame){const g=pendingGame;pendingGame=null;mountGameInEmulator(g)}});
 all().then(x=>{games=x;render()}).catch(()=>$('#shelf').innerHTML='<div class="empty">IndexedDB indisponible dans ce navigateur.</div>');
-$('#emuReset').onclick=()=>{try{emulatorFrame().contentWindow.neostReset&&emulatorFrame().contentWindow.neostReset();emulatorStatus('Reset envoyé au moteur.')}catch(e){emulatorStatus('Moteur en cours de chargement.')}};
-$('#emuJoy').onclick=()=>{emuJoy=!emuJoy;try{const w=emulatorFrame().contentWindow;w.neostSetKeyboardJoystick&&w.neostSetKeyboardJoystick(emuJoy)}catch(e){}$('#emuJoy').textContent='JOYSTICK : '+(emuJoy?'ON':'OFF')};
-$('#emuSound').onclick=()=>{emuSound=!emuSound;try{const w=emulatorFrame().contentWindow;w.neostSetDriveSound&&w.neostSetDriveSound(emuSound)}catch(e){}$('#emuSound').textContent='SON : '+(emuSound?'ON':'OFF')};
+$('#emuReset').onclick=()=>{const m=hatariModule();if(m&&m.calledRun&&m.ccall){try{m.ccall('Reset_Warm',null,[],[]);emuPaused=false;emulatorStatus('Reset Hatari effectué.')}catch(e){emulatorStatus('Reset impossible : '+e.message)}}else emulatorStatus('Hatari est encore en cours de chargement.')};
+$('#emuJoy').onclick=()=>{emuJoy=!emuJoy;applyHatariJoystick();$('#emuJoy').textContent='JOYSTICK : '+(emuJoy?'ON':'OFF')};
+$('#emuSound').onclick=async()=>{const m=hatariModule(),ctx=m&&m.SDL2&&m.SDL2.audioContext;if(!ctx){emulatorStatus('Audio Hatari pas encore initialisé. Clique dans l’écran puis réessaie.');return}try{if(emuSound){await ctx.suspend();emuSound=false}else{await ctx.resume();emuSound=true}$('#emuSound').textContent='SON : '+(emuSound?'ON':'OFF');emulatorStatus('Son '+(emuSound?'activé':'coupé')+'.')}catch(e){emulatorStatus('Commande audio indisponible : '+e.message)}};
 $('#emuFullscreen').onclick=()=>{const target=$('#emuHost');if(target.requestFullscreen)target.requestFullscreen()};
-$('#emuStop').onclick=()=>{$('#emuHost').classList.remove('active');$('#fakeDesktop').style.display='block';$('#displayScreen').classList.remove('emulating');emulatorStatus('Retour au bureau MY ATARI ST.')};
+$('#emuStop').onclick=()=>{const m=hatariModule();if(m&&m.pauseMainLoop){m.pauseMainLoop();emuPaused=true}$('#emuHost').classList.remove('active');$('#fakeDesktop').style.display='block';$('#displayScreen').classList.remove('emulating');emulatorStatus('Retour au bureau MY ATARI ST. La session reste en mémoire.')};
 </script></body></html>

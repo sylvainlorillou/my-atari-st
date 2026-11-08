@@ -55,7 +55,7 @@ main{min-width:0}.screen-wrap{padding:12px;border-radius:25px;max-width:720px;wi
 .game b{font-size:14px;display:block;color:#202528}
 .game small{font-size:10px;color:#555b5d;display:block}
 .box-front{position:absolute;bottom:0;left:0;right:0;height:65px;display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(#444d4f,#303739);border-top:1px solid #697274;color:#dfe3e1;font-size:23px;box-shadow:0 -4px 10px #0006}
-.box-front span{color:#aeb9b7;letter-spacing:-3px;font-size:17px}.side-foot{padding-top:9px;border-top:1px solid #ffffff30;margin-top:8px}.insert-target{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px}.insert-target button{background:#d8d7d0;border:1px solid #aaa;color:#25282a;padding:6px 9px;border-radius:6px;font-weight:700}
+.box-front span{color:#aeb9b7;letter-spacing:-3px;font-size:17px}.side-foot{padding-top:9px;border-top:1px solid #ffffff30;margin-top:8px}.insert-target{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px}.insert-target button{background:#d8d7d0;border:1px solid #aaa;color:#25282a;padding:6px 9px;border-radius:6px;font-weight:700}.disk-file-label{display:inline-block;background:#d8d7d0;border:1px solid #aaa;color:#25282a;padding:6px 9px;border-radius:6px;font-weight:700;cursor:pointer}
 .hide-side .layout{grid-template-columns:minmax(0,1fr)}.hide-side .sidebar{display:none}
 .page{display:none}.page.active{display:block;animation:fade .15s ease}@keyframes fade{from{opacity:.6;transform:translateY(3px)}to{opacity:1;transform:none}}
 .section-card{background:linear-gradient(145deg,#e4e3dc,#c8c7bf);color:#282b2c;border:1px solid #a6a59d;border-radius:12px;padding:14px;margin-bottom:10px}.section-card h2{font-size:16px;margin:0 0 10px}.section-card p{font-size:12px;color:#56595a}.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.setting-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px;border-top:1px solid #aaa9a1;font-size:12px}.setting-row select,.setting-row input{max-width:180px;padding:5px;border:1px solid #aaa;border-radius:5px;background:#f1f0ea;color:#222}
@@ -106,7 +106,7 @@ main{min-width:0}.screen-wrap{padding:12px;border-radius:25px;max-width:720px;wi
   <div class="monitor-stage"><img class="monitor-reference" src="atari-monitor.svg" alt="Écran Atari SM124 — illustration de référence"><div class="monitor-content" id="monitorContent"><div class="atari-mark">♜</div><h1>ATARI ST</h1><p>1 Mo RAM　|　TOS 1.04　|　HATARI WASM</p><iframe id="hatariSimulation" title="Émulateur Atari ST Hatari" src="hatari/hatari.html" allow="pointer-lock; fullscreen"></iframe></div></div>
   <div class="hardware">
    <section class="hw drives-panel"><div class="hw-title">▣ Lecteurs de disquette <span>A / B</span></div><div class="drives">
-    <div class="drive"><img class="drive-reference" src="atari-floppy-drive.svg" alt="Façade du lecteur A"><div class="drive-status"><strong>A:</strong><i class="led on" id="ledA"></i><small id="diskA">Vroom (1991)</small><button class="mini-btn" data-eject="A">Éjecter</button></div></div>
+    <div class="drive"><img class="drive-reference" src="atari-floppy-drive.svg" alt="Façade du lecteur A"><div class="drive-status"><strong>A:</strong><i class="led" id="ledA"></i><small id="diskA">Vide</small><button class="mini-btn" data-eject="A">Éjecter</button></div></div>
     <div class="drive"><img class="drive-reference" src="atari-floppy-drive.svg" alt="Façade du lecteur B"><div class="drive-status"><strong>B:</strong><i class="led" id="ledB"></i><small id="diskB">Vide</small><button class="mini-btn" data-eject="B">Éjecter</button></div></div>
    </div></section>
    <section class="hw controls-panel"><div class="hw-title">◈ Contrôleurs <span>2 ports + souris</span></div><div class="joystick-row">
@@ -131,7 +131,7 @@ main{min-width:0}.screen-wrap{padding:12px;border-radius:25px;max-width:720px;wi
  <button class="game" style="--accent:#345fd8" data-game="The Addams Family"><span class="spine">THE ADDAMS FAMILY</span><span class="disk-face"><span class="disk-shell"></span><span class="disk-label"><b>The Addams Family</b><small>1992 · Ocean</small></span><span class="disk-launch">LANCER ↗</span></span></button>
  <button class="game" style="--accent:#e87819" data-game="Star Wars — Return of the Jedi"><span class="spine">STAR WARS · RETURN OF THE JEDI</span><span class="disk-face"><span class="disk-shell"></span><span class="disk-label"><b>Star Wars</b><small>Return of the Jedi · 1987</small></span><span class="disk-launch">LANCER ↗</span></span></button>
  <button class="game" style="--accent:#a64bd0" data-game="Speedball 2"><span class="spine">SPEEDBALL 2 · BRUTAL DELUXE</span><span class="disk-face"><span class="disk-shell"></span><span class="disk-label"><b>Speedball 2</b><small>1990 · Image Works</small></span><span class="disk-launch">LANCER ↗</span></span></button>
- </div><div class="box-front">〽 <b>ATARI ST</b><span>▰▰▰▰</span></div></div><div class="side-foot"><div class="insert-target"><span>Insérer la sélection dans :</span><button id="insertA">Lecteur A</button><button id="insertB">Lecteur B</button></div><p class="notice">Démo d'interface : aucune image disque n'est réellement montée.</p></div></aside>
+ </div><div class="box-front">〽 <b>ATARI ST</b><span>▰▰▰▰</span></div></div><div class="side-foot"><div class="insert-target"><span>Image disque personnelle :</span><label class="disk-file-label" for="diskImageFile">Choisir .ST / .MSA / .DIM</label><input id="diskImageFile" type="file" accept=".st,.msa,.dim,.stx,.zip" hidden></div><p class="notice" id="diskFileName">Aucune image sélectionnée. Les jeux illustrés sont des références visuelles ; leurs fichiers ne sont pas fournis.</p><div class="insert-target"><span>Insérer l’image dans :</span><button id="insertA">Lecteur A</button><button id="insertB">Lecteur B</button></div></div></aside>
 </div>
 <button class="library-toggle" id="mobileLibrary">▤ Bibliothèque</button>
 <script>
@@ -174,9 +174,29 @@ $("#mobileLibrary").onclick=()=>openSide();$("#closeSide").onclick=()=>{if(inner
 $("#openLibrary").onclick=()=>{showTab("console");if(innerWidth<=760)openSide(true);else document.body.classList.remove("hide-side")};
 document.querySelectorAll(".game").forEach(b=>b.onclick=()=>{document.querySelectorAll(".game").forEach(x=>x.classList.remove("active"));b.classList.add("active");selected=b.dataset.game});
 $("#search").oninput=e=>document.querySelectorAll(".game").forEach(b=>b.hidden=!b.dataset.game.toLowerCase().includes(e.target.value.toLowerCase()));
-function insert(d){$("#disk"+d).textContent=selected;$("#led"+d).classList.add("on");}
+let selectedDiskFile=null;
+$("#diskImageFile").addEventListener("change",e=>{selectedDiskFile=e.target.files[0]||null;$("#diskFileName").textContent=selectedDiskFile?"Image prête : "+selectedDiskFile.name:"Aucune image sélectionnée."});
+async function insert(d){
+ if(!selectedDiskFile){$("#diskFileName").textContent="Choisis d’abord une image disque personnelle (.ST, .MSA, .DIM ou .STX).";$("#diskImageFile").click();return}
+ const m=hatariModule();if(!m||!m.calledRun||!m.FS||!m.ccall){$("#simulationStatus").textContent="Hatari n’est pas encore prêt pour monter une disquette.";return}
+ const drive=d==="A"?0:1,file=selectedDiskFile;
+ try{
+  const bytes=new Uint8Array(await file.arrayBuffer()),safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,"_"),path="/tmp/my-atari-"+d+"-"+Date.now()+"-"+safeName;
+  m.FS.writeFile(path,bytes);
+  const result=m.ccall("Floppy_SetDiskFileName","string",["number","string","string"],[drive,path,null]);
+  if(!result)throw new Error("Hatari refuse cette image disque.");
+  const inserted=m.ccall("Floppy_InsertDiskIntoDrive","number",["number"],[drive]);
+  if(!inserted)throw new Error("Insertion refusée. Vérifie le format de l’image.");
+  $("#disk"+d).textContent=file.name;$("#led"+d).classList.add("on");
+  $("#simulationStatus").textContent="Image insérée dans le lecteur "+d+" : "+file.name;
+ }catch(err){$("#simulationStatus").textContent="Montage impossible dans le lecteur "+d+" : "+err.message}
+}
 $("#insertA").onclick=()=>insert("A");$("#insertB").onclick=()=>insert("B");
-document.querySelectorAll("[data-eject]").forEach(b=>b.onclick=()=>{$("#disk"+b.dataset.eject).textContent="Vide";$("#led"+b.dataset.eject).classList.remove("on")});
+document.querySelectorAll("[data-eject]").forEach(b=>b.onclick=()=>{
+ const d=b.dataset.eject,m=hatariModule(),drive=d==="A"?0:1;
+ if(m&&m.calledRun&&m.ccall){try{m.ccall("Floppy_SetDiskFileName","string",["number","string","string"],[drive,"none",null]);m.ccall("Floppy_InsertDiskIntoDrive","number",["number"],[drive])}catch(err){$("#simulationStatus").textContent="Éjection impossible : "+err.message;return}}
+ $("#disk"+d).textContent="Vide";$("#led"+d).classList.remove("on");$("#simulationStatus").textContent="Lecteur "+d+" éjecté.";
+});
 $("#start").onclick=startSimulation;$("#pause").onclick=pauseSimulation;$("#reset").onclick=resetSimulation;$("#fullscreen").onclick=()=>document.querySelector(".monitor-stage").requestFullscreen?.();
 $('#goControllerSettings').onclick=()=>{showTab('console');$('#controllerConfig').open=true;$('#controllerConfig').scrollIntoView({behavior:'smooth',block:'center'})};initJoy();initMouse();document.querySelectorAll(".profile").forEach(b=>b.onclick=()=>{profile=b.dataset.profile;$("#profileStatus").textContent="Profil actif : "+profile;localStorage.setItem("myAtariPrototypeProfile",profile)});
 $("#saveProfile").onclick=()=>{localStorage.setItem("myAtariPrototypeProfile",profile);alert("Profil "+profile+" enregistré dans ce navigateur.")};
